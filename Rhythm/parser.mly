@@ -56,7 +56,7 @@ stmt:
   | IF LPAREN expr RPAREN stmt %prec NOELSE { If($3, $5, Block([])) }
   | IF LPAREN expr RPAREN stmt ELSE stmt    { If($3, $5, $7) }
   | WHILE LPAREN expr RPAREN stmt { While($3, $5) }
-  | LOOP LPAREN expr RPAREN stmt {Loop($3, $5)}
+  | LOOP LPAREN expr RPAREN stmt { Loop($3, $5) }
 
 expr_opt:
     /* nothing */ { Noexpr }
