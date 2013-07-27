@@ -4,7 +4,6 @@ type expr =
     Literal of int
   | Note of string
   | Chord of expr
-  | Bool of bool 
   | Id of string
   | Binop of expr * op * expr
   | Assign of string * expr
