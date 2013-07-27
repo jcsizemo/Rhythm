@@ -5,6 +5,7 @@ type expr =
   | Note of string
   | Chord of expr
   | Id of string
+  | Array of expr * expr
   | Binop of expr * op * expr
   | Assign of string * expr
   | Call of string * expr list

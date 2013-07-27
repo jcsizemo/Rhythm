@@ -14,10 +14,12 @@
 %token <string> NOTE
 %token <string> CHORD
 %token EOF
+%token ARRAY_SEP
 
 %nonassoc NOELSE
 %nonassoc ELSE
 %right ASSIGN
+%left ARRAY_SEP
 %left EQ NEQ
 %left PLUS MINUS
 %left TIMES DIVIDE
@@ -72,6 +74,7 @@ expr:
   | ID ASSIGN expr   { Assign($1, $3) }
   | ID LPAREN actuals_opt RPAREN { Call($1, $3) }
   | LPAREN expr RPAREN { $2 }
+  | expr ARRAY_SEP expr { Array($1, $3)}
 
 actuals_opt:
     /* nothing */ { [] }
