@@ -19,7 +19,6 @@
 %nonassoc ELSE
 %right ASSIGN
 %left EQ NEQ
-%left LT GT LEQ GEQ
 %left PLUS MINUS
 %left TIMES DIVIDE
 

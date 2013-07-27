@@ -16,6 +16,7 @@ rule token = parse
 | '*'      { LONGER }
 | '/'      { SHORTER }
 | '='      { ASSIGN }
+| ':'	   { COLON }
 | "::"	   { CONCAT }
 | "!:"	   { REMOVE }
 | "=="     		{ EQ }
