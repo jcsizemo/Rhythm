@@ -1,6 +1,6 @@
 %{ open Ast %}
 
-%token SEMI LPAREN RPAREN LBRACE RBRACE COMMA LBRACKET RBRACKET COLON
+%token SEMI LPAREN RPAREN LBRACE RBRACE COMMA LBRACKET RBRACKET %token COLON
 %token PLUS MINUS LONGER SHORTER ASSIGN CONCAT REMOVE
 %token EQ NEQ OCTDOWN OCTUP HALFUP HALFDOWN
 %token ASSIGN_PLUS ASSIGN_MINUS ASSIGN_LONGER
@@ -56,7 +56,7 @@ stmt:
   | IF LPAREN expr RPAREN stmt %prec NOELSE { If($3, $5, Block([])) }
   | IF LPAREN expr RPAREN stmt ELSE stmt    { If($3, $5, $7) }
   | WHILE LPAREN expr RPAREN stmt { While($3, $5) }
-  | LOOP LPAREN expr expr RPAREN stmt { Loop($3, $4, $6) }
+  | LOOP LPAREN expr COLON expr RPAREN stmt { Loop($3, $5, $7) }
 
 
 expr:
