@@ -43,6 +43,7 @@ type token =
   | LITERAL of (int)
   | ID of (string)
   | NOTE of (string)
+  | CHORD of (string)
   | EOF
 
 val program :
