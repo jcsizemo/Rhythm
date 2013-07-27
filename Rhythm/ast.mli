@@ -17,6 +17,7 @@ type stmt =
   | Return of expr
   | If of expr * stmt * stmt
   | While of expr * stmt
+  | Loop of expr * expr * stmt
 
 type func_decl = {
     fname : string;
