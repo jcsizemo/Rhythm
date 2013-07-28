@@ -85,7 +85,12 @@ let run (vars, funcs) =
 	    let v, env = eval env e in
 	    if v != 0 then loop (exec env s) else env
 	  in loop env
-      | Return(e) ->
+	  | Loop(e1, e2, s) ->
+	  	  let rec loop env =
+	    let v, env = eval env e1 in
+	    if v != 0 then loop (exec env s) else env
+	  in loop env
+	  | Return(e) ->
 	  let v, (locals, globals) = eval env e in
 	  raise (ReturnException(v, globals))
     in
