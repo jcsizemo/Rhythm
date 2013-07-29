@@ -36,11 +36,11 @@ let translate (globals, functions) =
   let translate env fdecl =
     (* Bookkeeping: FP offsets for locals and arguments *)
     let num_formals = List.length fdecl.formals
-    and num_locals = List.length fdecl.locals
-    and local_offsets = enum 1 1 fdecl.locals
+    (*and num_locals = List.length fdecl.locals
+    and local_offsets = enum 1 1 fdecl.locals*)
     and formal_offsets = enum (-1) (-2) fdecl.formals in
     let env = { env with local_index = string_map_pairs
-		  StringMap.empty (local_offsets @ formal_offsets) } in
+		  StringMap.empty ((*local_offsets @*) formal_offsets) } in
 
     let rec expr = function
 	Literal i -> [Lit i]
@@ -66,14 +66,14 @@ let translate (globals, functions) =
       | If (p, t, f) -> let t' = stmt t and f' = stmt f in
 	expr p @ [Beq(2 + List.length t')] @
 	t' @ [Bra(1 + List.length f')] @ f'
-      | For (e1, e2, e3, b) ->
-	  stmt (Block([Expr(e1); While(e2, Block([b; Expr(e3)]))]))
+      (*| For (e1, e2, e3, b) ->
+	  stmt (Block([Expr(e1); While(e2, Block([b; Expr(e3)]))]))*)
       | While (e, b) ->
 	  let b' = stmt b and e' = expr e in
 	  [Bra (1+ List.length b')] @ b' @ e' @
 	  [Bne (-(List.length b' + List.length e'))]
 
-    in [Ent num_locals] @      (* Entry: allocate space for locals *)
+    in (*[Ent num_locals] @ *)     (* Entry: allocate space for locals *)
     stmt (Block fdecl.body) @  (* Body *)
     [Lit 0; Rts num_formals]   (* Default = return 0 *)
 

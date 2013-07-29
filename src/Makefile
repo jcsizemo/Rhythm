@@ -1,4 +1,4 @@
-OBJS = ast.cmo parser.cmo scanner.cmo interpret.cmo bytecode.cmo compile.cmo execute.cmo microc.cmo
+OBJS = ast.cmo parser.cmo scanner.cmo interpret.cmo bytecode.cmo compile.cmo execute.cmo rhythm.cmo
 
 TESTS = \
 arith1 \
@@ -24,8 +24,8 @@ TARFILES = Makefile testall.sh scanner.mll parser.mly \
 	$(TESTS:%=tests/test-%.mc) \
 	$(TESTS:%=tests/test-%.out)
 
-microc : $(OBJS)
-	ocamlc -o microc $(OBJS)
+rhythm : $(OBJS)
+	ocamlc -o rhythm $(OBJS)
 
 .PHONY : test
 test : rhythm testall.sh
@@ -62,9 +62,9 @@ execute.cmo: bytecode.cmo ast.cmo
 execute.cmx: bytecode.cmx ast.cmx 
 interpret.cmo: ast.cmo 
 interpret.cmx: ast.cmx 
-microc.cmo: scanner.cmo parser.cmi interpret.cmo execute.cmo compile.cmo \
+rhythm.cmo: scanner.cmo parser.cmi interpret.cmo execute.cmo compile.cmo \
     bytecode.cmo ast.cmo 
-microc.cmx: scanner.cmx parser.cmx interpret.cmx execute.cmx compile.cmx \
+rhythm.cmx: scanner.cmx parser.cmx interpret.cmx execute.cmx compile.cmx \
     bytecode.cmx ast.cmx 
 parser.cmo: ast.cmo parser.cmi 
 parser.cmx: ast.cmx parser.cmi 

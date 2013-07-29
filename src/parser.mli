@@ -7,6 +7,7 @@ type token =
   | COMMA
   | LBRACKET
   | RBRACKET
+  | COLON
   | PLUS
   | MINUS
   | LONGER
@@ -45,6 +46,7 @@ type token =
   | NOTE of (string)
   | CHORD of (string)
   | EOF
+  | ARRAY_SEP
 
 val program :
   (Lexing.lexbuf  -> token) -> Lexing.lexbuf -> Ast.program
