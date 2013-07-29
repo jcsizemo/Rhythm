@@ -4,6 +4,6 @@ add(a,b) {
 
 main()
 {
-  c = 12;
-  print(c + 12);
+  c = A4;
+  print(c);
 }

@@ -77,6 +77,7 @@ expr:
   | ID ASSIGN expr   { Assign($1, $3) }
   | ID LPAREN actuals_opt RPAREN { Call($1, $3) }
   | LPAREN expr RPAREN { $2 }
+  | LBRACKET expr RBRACKET { $2 }
   | expr ARRAY_SEP expr { Array($1, $3)}
 
 /* passed in args to a function */

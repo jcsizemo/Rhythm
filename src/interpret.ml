@@ -30,6 +30,7 @@ let run (vars, funcs) =
 	  else if NameMap.mem var globals then
 	    (NameMap.find var globals), env
 	  else raise (Failure ("undeclared identifier " ^ var))
+	  | Note(n) -> n, env
       | Binop(e1, op, e2) ->
 	  let v1, env = eval env e1 in
           let v2, env = eval env e2 in
