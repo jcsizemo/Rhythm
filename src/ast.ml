@@ -1,9 +1,10 @@
-type op = Add | Sub | Mult | Div | Equal | Neq | Less | Leq | Greater | Geq
+type op = Plus | Minus | Longer | Shorter | Equal | Neq | Concat | Remove | Octup
+          | Octdown | Halfup | Halfdown
 
 type expr =
     Literal of int
   | Note of string
-  | Chord of expr
+  | Chord of expr list
   | Id of string
   | Array of expr * expr
   | Binop of expr * op * expr
@@ -33,9 +34,8 @@ let rec string_of_expr = function
   | Binop(e1, o, e2) ->
       string_of_expr e1 ^ " " ^
       (match o with
-  Add -> "+" | Sub -> "-" | Mult -> "*" | Div -> "/"
-      | Equal -> "==" | Neq -> "!="
-      | Less -> "<" | Leq -> "<=" | Greater -> ">" | Geq -> ">=") ^ " " ^
+  Plus -> "+" | Minus -> "-" | Longer -> "*" | Shorter -> "/"
+      | Equal -> "==" | Neq -> "!=") ^ " " ^
       string_of_expr e2
   | Assign(v, e) -> v ^ " = " ^ string_of_expr e
   | Call(f, el) ->

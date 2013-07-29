@@ -29,17 +29,19 @@
 %type <Ast.program> program
 
 %%
-
+/* program: just a set of functions */
 program:
    /* nothing */ { [], [] }
  | program fdecl { fst $1, ($2 :: snd $1) }
 
+/* function declaration */
 fdecl:
    ID LPAREN formals_opt RPAREN LBRACE stmt_list RBRACE
      { { fname = $1;
 	 formals = $3;
 	 body = List.rev $6 } }
 
+/* declared function args */
 formals_opt:
     /* nothing */ { [] }
   | formal_list   { List.rev $1 }
@@ -66,10 +68,10 @@ expr:
     LITERAL          { Literal($1) }
   | ID               { Id($1) }
   | NOTE             { Note($1) }
-  | expr PLUS   expr { Binop($1, Add,   $3) }
-  | expr MINUS  expr { Binop($1, Sub,   $3) }
-  | expr TIMES  expr { Binop($1, Mult,  $3) }
-  | expr DIVIDE expr { Binop($1, Div,   $3) }
+  | expr PLUS   expr { Binop($1, Plus,   $3) }
+  | expr MINUS  expr { Binop($1, Minus,   $3) }
+  | expr LONGER  expr { Binop($1, Longer,  $3) }
+  | expr SHORTER expr { Binop($1, Shorter,   $3) }
   | expr EQ     expr { Binop($1, Equal, $3) }
   | expr NEQ    expr { Binop($1, Neq,   $3) }
   | ID ASSIGN expr   { Assign($1, $3) }
@@ -77,6 +79,7 @@ expr:
   | LPAREN expr RPAREN { $2 }
   | expr ARRAY_SEP expr { Array($1, $3)}
 
+/* passed in args to a function */
 actuals_opt:
     /* nothing */ { [] }
   | actuals_list  { List.rev $1 }

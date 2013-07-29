@@ -22,16 +22,12 @@ type prog = {
 let string_of_stmt = function
     Lit(i) -> "Lit " ^ string_of_int i
   | Drp -> "Drp"
-  | Bin(Ast.Add) -> "Add"
-  | Bin(Ast.Sub) -> "Sub"
-  | Bin(Ast.Mult) -> "Mul"
-  | Bin(Ast.Div) -> "Div"
+  | Bin(Ast.Plus) -> "Plus"
+  | Bin(Ast.Minus) -> "Minus"
+  | Bin(Ast.Longer) -> "Longer"
+  | Bin(Ast.Shorter) -> "Shorter"
   | Bin(Ast.Equal) -> "Eql"
   | Bin(Ast.Neq) -> "Neq"
-  | Bin(Ast.Less) -> "Lt"
-  | Bin(Ast.Leq) -> "Leq"
-  | Bin(Ast.Greater) -> "Gt"
-  | Bin(Ast.Geq) -> "Geq"
   | Lod(i) -> "Lod " ^ string_of_int i
   | Str(i) -> "Str " ^ string_of_int i
   | Lfp(i) -> "Lfp " ^ string_of_int i

@@ -35,16 +35,12 @@ let run (vars, funcs) =
           let v2, env = eval env e2 in
 	  let boolean i = if i then 1 else 0 in
 	  (match op with
-	    Add -> v1 + v2
-	  | Sub -> v1 - v2
-	  | Mult -> v1 * v2
-	  | Div -> v1 / v2
+	    Plus -> v1 + v2
+	  | Minus -> v1 - v2
+	  | Longer -> v1 * v2
+	  | Shorter -> v1 / v2
 	  | Equal -> boolean (v1 = v2)
-	  | Neq -> boolean (v1 != v2)
-	  | Less -> boolean (v1 < v2)
-	  | Leq -> boolean (v1 <= v2)
-	  | Greater -> boolean (v1 > v2)
-	  | Geq -> boolean (v1 >= v2)), env
+	  | Neq -> boolean (v1 != v2)), env
       | Assign(var, e) ->
 	  let v, (locals, globals) = eval env e in
 	  if NameMap.mem var locals then

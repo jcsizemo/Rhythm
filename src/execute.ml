@@ -23,16 +23,12 @@ let execute_prog prog =
   | Bin op -> let op1 = stack.(sp-2) and op2 = stack.(sp-1) in     
       stack.(sp-2) <- (let boolean i = if i then 1 else 0 in
       match op with
-	Add     -> op1 + op2
-      | Sub     -> op1 - op2
-      | Mult    -> op1 * op2
-      | Div     -> op1 / op2
+	     Plus     -> op1 + op2
+      | Minus     -> op1 - op2
+      | Longer    -> op1 * op2
+      | Shorter     -> op1 / op2
       | Equal   -> boolean (op1 =  op2)
-      | Neq     -> boolean (op1 != op2)
-      | Less    -> boolean (op1 <  op2)
-      | Leq     -> boolean (op1 <= op2)
-      | Greater -> boolean (op1 >  op2)
-      | Geq     -> boolean (op1 >= op2)) ;
+      | Neq     -> boolean (op1 != op2)) ;
       exec fp (sp-1) (pc+1)
   | Lod i   -> stack.(sp)   <- globals.(i)  ; exec fp (sp+1) (pc+1)
   | Str i   -> globals.(i)  <- stack.(sp-1) ; exec fp sp     (pc+1)
