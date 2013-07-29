@@ -4,7 +4,7 @@ type op = Plus | Minus | Longer | Shorter | Equal | Neq | Concat | Remove | Octu
 type expr =
     Literal of int
   | Note of string
-  | Chord of expr list
+  | Chord of expr
   | Id of string
   | Array of expr * expr
   | Binop of expr * op * expr

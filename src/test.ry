@@ -1,4 +1,9 @@
+add(a,b) {
+	return a + b;
+}
+
 main()
 {
-  print(39 + 3);
+  c = 12;
+  print(c + 12);
 }

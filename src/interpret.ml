@@ -47,7 +47,9 @@ let run (vars, funcs) =
 	    v, (NameMap.add var v locals, globals)
 	  else if NameMap.mem var globals then
 	    v, (locals, NameMap.add var v globals)
-	  else raise (Failure ("undeclared identifier " ^ var))
+	  (*else raise (Failure ("undeclared identifier " ^ var))*)
+	  else
+	  	v, (NameMap.add var v locals, globals)
       | Call("print", [e]) ->
 	  let v, env = eval env e in
 	  print_endline (string_of_int v);
