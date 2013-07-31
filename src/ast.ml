@@ -10,6 +10,7 @@ type expr =
   | Binop of expr * op * expr
   | Assign of string * expr
   | Call of string * expr list
+  | Index of expr * int
   | Noexpr
 
 type stmt =

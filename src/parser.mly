@@ -78,6 +78,7 @@ expr:
   | ID LPAREN actuals_opt RPAREN { Call($1, $3) }
   | LPAREN expr RPAREN { $2 }
   | LBRACKET actuals_opt RBRACKET { Array($2) }
+  | expr LBRACKET LITERAL RBRACKET { Index($1,$3) }
 
 /* passed in args to a function */
 actuals_opt:

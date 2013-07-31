@@ -32,6 +32,10 @@ let run (vars, funcs) =
 	  else raise (Failure ("undeclared identifier " ^ var))
 	  | Note(n) -> Note(n), env
 	  | Array(n) -> Array(n), env
+	  | Index(a,i) -> let v, (locals, globals) = eval env a in
+	  		(match v with
+	  		Array(x) -> List.nth x i, env
+	  		| _ -> raise (Failure ("Attempting to index a variable that isn't an array")))
       (*| Binop(e1, op, e2) ->
 	  let v1, env = eval env e1 in
           let v2, env = eval env e2 in
