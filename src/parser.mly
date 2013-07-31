@@ -14,7 +14,6 @@
 %token <string> ID
 %token <string> NOTE
 %token <string> CHORD
-%token VAR
 %token EOF
 %token ARRAY_SEP
 
@@ -35,13 +34,14 @@ program:
    /* nothing */ { [], [] }
  | program fdecl { fst $1, ($2 :: snd $1) }
 
+/* function declaration */
 fdecl:
-   ID LPAREN formals_opt RPAREN LBRACE vdecl_list stmt_list RBRACE
+   ID LPAREN formals_opt RPAREN LBRACE stmt_list RBRACE
      { { fname = $1;
-   formals = $3;
-   locals = List.rev $6;
-   body = List.rev $7 } }
+	 formals = $3;
+	 body = List.rev $6 } }
 
+/* declared function args */
 formals_opt:
     /* nothing */ { [] }
   | formal_list   { List.rev $1 }
@@ -49,13 +49,6 @@ formals_opt:
 formal_list:
     ID                   { [$1] }
   | formal_list COMMA ID { $3 :: $1 }
-
-vdecl_list:
-    /* nothing */    { [] }
-  | vdecl_list vdecl { $2 :: $1 }
-
-vdecl:
-   VAR ID SEMI { $2 }
 
 stmt_list:
     /* nothing */  { [] }
@@ -84,8 +77,7 @@ expr:
   | ID ASSIGN expr   { Assign($1, $3) }
   | ID LPAREN actuals_opt RPAREN { Call($1, $3) }
   | LPAREN expr RPAREN { $2 }
-  | LBRACKET expr RBRACKET { $2 }
-  | expr ARRAY_SEP expr { Array($1, $3)}
+  | LBRACKET actuals_opt RBRACKET { Array($2) }
 
 /* passed in args to a function */
 actuals_opt:

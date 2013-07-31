@@ -19,10 +19,10 @@ let run (vars, funcs) =
   (* Invoke a function and return an updated global symbol table *)
   let rec call fdecl actuals globals =
 
-    (* Evaluate an expression and return (value, updated environment) *)
+	(* Evaluate an expression and return (value, updated environment) *)
     let rec eval env = function
-	Literal(i) -> i, env
-      | Noexpr -> 1, env (* must be non-zero for the for loop predicate *)
+	Literal(i) -> Literal(i), env
+      (*| Noexpr -> 1, env (* must be non-zero for the for loop predicate *)*)
       | Id(var) ->
 	  let locals, globals = env in
 	  if NameMap.mem var locals then
@@ -30,8 +30,9 @@ let run (vars, funcs) =
 	  else if NameMap.mem var globals then
 	    (NameMap.find var globals), env
 	  else raise (Failure ("undeclared identifier " ^ var))
-	  | Note(n) -> n, env
-      | Binop(e1, op, e2) ->
+	  | Note(n) -> Note(n), env
+	  | Array(n) -> Array(n), env
+      (*| Binop(e1, op, e2) ->
 	  let v1, env = eval env e1 in
           let v2, env = eval env e2 in
 	  let boolean i = if i then 1 else 0 in
@@ -41,7 +42,7 @@ let run (vars, funcs) =
 	  | Longer -> v1 * v2
 	  | Shorter -> v1 / v2
 	  | Equal -> boolean (v1 = v2)
-	  | Neq -> boolean (v1 != v2)), env
+	  | Neq -> boolean (v1 != v2)), env*)
       | Assign(var, e) ->
 	  let v, (locals, globals) = eval env e in
 	  if NameMap.mem var locals then
@@ -53,9 +54,17 @@ let run (vars, funcs) =
 	  	v, (NameMap.add var v locals, globals)
       | Call("print", [e]) ->
 	  let v, env = eval env e in
-	  print_endline (string_of_int v);
-	  0, env
-      | Call(f, actuals) ->
+	  let rec print = function
+	  	Literal(i) -> string_of_int i
+	  	| Note(v) -> v
+	  	| Array(v) -> "[" ^ build v ^ "]" and build = function
+	  							hd :: [] -> (print hd)
+	  							| hd :: tl -> ((print hd) ^ "," ^ (build tl))
+	  	| _ ->  "Something else"
+	in
+		print_endline (print v);
+	  Literal(0), env
+      (*| Call(f, actuals) ->
 	  let fdecl =
 	    try NameMap.find f func_decls
 	    with Not_found -> raise (Failure ("undefined function " ^ f))
@@ -69,14 +78,14 @@ let run (vars, funcs) =
 	  try
 	    let globals = call fdecl actuals globals
 	    in 0, (locals, globals)
-	  with ReturnException(v, globals) -> v, (locals, globals)
+	  with ReturnException(v, globals) -> v, (locals, globals)*)
     in
 
     (* Execute a statement and return an updated environment *)
     let rec exec env = function
 	Block(stmts) -> List.fold_left exec env stmts
       | Expr(e) -> let _, env = eval env e in env
-      | If(e, s1, s2) ->
+      (*| If(e, s1, s2) ->
 	  let v, env = eval env e in
 	  exec env (if v != 0 then s1 else s2)
       | While(e, s) ->
@@ -92,7 +101,7 @@ let run (vars, funcs) =
 	  in loop env	   
 	  | Return(e) ->
 	  let v, (locals, globals) = eval env e in
-	  raise (ReturnException(v, globals))
+	  raise (ReturnException(v, globals))*)
     in
 
     (* Enter the function: bind actual values to formal arguments *)
@@ -104,15 +113,20 @@ let run (vars, funcs) =
 	raise (Failure ("wrong number of arguments passed to " ^ fdecl.fname))
     in
     (* Initialize local variables to 0 *)
-    let locals = List.fold_left
+    (* kai comment on 07/27 start: to avoid an error temporarily
+	let locals = List.fold_left
 	(fun locals local -> NameMap.add local 0 locals) locals fdecl.locals
     in
+	   Kai comment on 07/27 end*)
     (* Execute each statement in sequence, return updated global symbol table *)
     snd (List.fold_left exec (locals, globals) fdecl.body)
+	
 
   (* Run a program: initialize global variables to 0, find and run "main" *)
-  in let globals = List.fold_left
-      (fun globals vdecl -> NameMap.add vdecl 0 globals) NameMap.empty vars
+  (*in let globals = List.fold_left
+      (fun globals vdecl -> NameMap.add vdecl 0 globals) NameMap.empty vars*)
+	in let globals = NameMap.empty
   in try
     call (NameMap.find "main" func_decls) [] globals
   with Not_found -> raise (Failure ("did not find the main() function"))
+

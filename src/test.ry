@@ -4,6 +4,14 @@ add(a,b) {
 
 main()
 {
-  c = A4;
+  c = [A4,C4,E4];
+  d = -5;
+  e = B#3;
+  f = Gb4;
+  g = 5;
   print(c);
+  print(d);
+  print(e);
+  print(f);
+  print(g);
 }
