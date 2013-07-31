@@ -46,6 +46,7 @@ rule token = parse
 | "tempo"		{ TEMPO }
 | "startTrack"	{ STARTTRACK }
 | "stopTrack"	{ STOPTRACK }
+| "var"    { VAR }
 | ['-']?['0'-'9']+ as lxm { LITERAL(int_of_string lxm) }
 | ['A' - 'G']['b' '#']?['0'-'9'] as lxm { NOTE(lxm) }
 | ['a'-'z' 'A'-'Z']['a'-'z' 'A'-'Z' '0'-'9' '_']* as lxm { ID(lxm) }

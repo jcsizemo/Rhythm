@@ -23,6 +23,7 @@ type stmt =
 type func_decl = {
     fname : string;
     formals : string list;
+    locals : string list;
     body : stmt list;
   }
 
@@ -53,7 +54,7 @@ let rec string_of_stmt = function
   | While(e, s) -> "while (" ^ string_of_expr e ^ ") " ^ string_of_stmt s
   | Loop(e1,e2,s) -> "loop (" ^ string_of_expr e1 ^ " : " ^ string_of_expr e2 ^ ")" ^ string_of_stmt s
 
-let string_of_vdecl id = "int " ^ id ^ ";\n"
+let string_of_vdecl id = "var " ^ id ^ ";\n"
 
 let string_of_fdecl fdecl =
   fdecl.fname ^ "(" ^ String.concat ", " fdecl.formals ^ ")\n{\n" ^

@@ -45,6 +45,7 @@ type token =
   | ID of (string)
   | NOTE of (string)
   | CHORD of (string)
+  | VAR
   | EOF
   | ARRAY_SEP
 
