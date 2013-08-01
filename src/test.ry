@@ -4,6 +4,9 @@ add(a,b) {
 
 main()
 {
+  def c;
+  def d;
+
   c = [A4,C4,E4];
   d = A4;
   print(c[3]);

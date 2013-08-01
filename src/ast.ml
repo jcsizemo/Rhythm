@@ -24,6 +24,7 @@ type stmt =
 type func_decl = {
     fname : string;
     formals : string list;
+    locals : string list;
     body : stmt list;
   }
 

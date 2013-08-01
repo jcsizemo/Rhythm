@@ -1,0 +1,15 @@
+add(a,b) {
+	return a; 
+}
+
+main()
+{
+  def c;
+  def d;
+  def e;
+
+  c = D4;
+  d = A4;
+  e = add(c,d);
+  print(e);
+}
