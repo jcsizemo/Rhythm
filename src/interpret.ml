@@ -49,11 +49,54 @@ let run (vars, funcs) =
 	  else raise (Failure ("undeclared identifier " ^ var))
       | Assign(var, e) ->
 	  let v, (locals, globals) = eval env e in
-	  if NameMap.mem var locals then
-	    v, (NameMap.add var v locals, globals)
-	  else if NameMap.mem var globals then
-	    v, (locals, NameMap.add var v globals)
-	  else raise (Failure ("undeclared identifier " ^ var))
+	  (match var with
+	  	Id(name) ->
+	  	if NameMap.mem name locals then
+	    	v, (NameMap.add name v locals, globals)
+	  	else if NameMap.mem name globals then
+	    	v, (locals, NameMap.add name v globals)
+	  	else
+	  		v, (NameMap.add name v locals, globals)
+	  	| Index(e,i) -> let arrName, indices =
+	  					let rec getRoot iList = function
+	  					Id(name) -> name, iList
+	  					| Index(a,b) -> getRoot (b :: iList) a
+	  					| _ -> raise (Failure ("This object is not an array")) in
+	  					getRoot [i] e in
+	  					let e =
+	  					if (NameMap.mem arrName locals) then
+	  						NameMap.find arrName locals
+	  					else if (NameMap.mem arrName globals) then
+	  						NameMap.find arrName globals
+	  					else
+	  						raise (Failure ("Attempting to reassign a piece of a non-existent array"))
+	  					in let eList =
+	  						(match e with
+	  						Array(a) -> a
+	  						| _ -> raise (Failure ("Variable in memory not an array")))
+	  					in
+	  						(*let rec swap exps = function
+	  						hd :: [] -> let arr = (Array.of_list exps)
+	  							in
+	  							arr.(hd) <- v; Array.to_list arr
+	  						| hd :: tl -> 	let arr = (Array.of_list exps)
+	  							in
+	  							let piece = arr.(hd) in
+	  							arr.(hd) <- Array(swap [piece] tl); Array.to_list arr
+	  					in
+	  						let newArray = Array(swap eList indices) in
+	  						v, (NameMap.add arrName newArray locals, globals)*)
+	  						let rec swap = function
+	  						hd :: [] -> let arr = (Array.of_list eList)
+	  									in
+	  									arr.(hd) <- v; Array.to_list arr
+	  						| hd :: tl -> 	let arr = (Array.of_list eList)
+	  										in
+	  										arr.(hd) <- Array(swap tl); Array.to_list arr
+	  					in
+	  						let newArray = Array(swap indices) in
+	  						v, (NameMap.add arrName newArray locals, globals)
+	  	| _ -> raise (Failure ("Can only assign variables or array segments")))
       | Call("print", [e]) ->
 	  let v, env = eval env e in
 	  let rec print = function

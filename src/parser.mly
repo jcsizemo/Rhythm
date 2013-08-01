@@ -15,12 +15,11 @@
 %token <string> NOTE
 %token <string> CHORD
 %token EOF
-%token ARRAY_SEP, DEF
+%token  DEF
 
 %nonassoc NOELSE
 %nonassoc ELSE
 %right ASSIGN
-%left ARRAY_SEP
 %left EQ NEQ
 %left PLUS MINUS
 %left TIMES DIVIDE
@@ -55,7 +54,7 @@ vdecl_list:
     /* nothing */    { [] }
   | vdecl_list vdecl { $2 :: $1 }
 
- vdecl:
+vdecl:
    DEF ID SEMI { $2 } 
 
 stmt_list:
@@ -82,7 +81,7 @@ expr:
   | expr SHORTER expr { Binop($1, Shorter,   $3) }
   | expr EQ     expr { Binop($1, Equal, $3) }
   | expr NEQ    expr { Binop($1, Neq,   $3) }
-  | ID ASSIGN expr   { Assign($1, $3) }
+  | expr ASSIGN expr   { Assign($1, $3) }
   | ID LPAREN actuals_opt RPAREN { Call($1, $3) }
   | LPAREN expr RPAREN { $2 }
   | LBRACKET actuals_opt RBRACKET { Array($2) }

@@ -7,7 +7,9 @@ main()
   def c;
   def d;
 
-  c = [A4,C4,E4];
+  c = [B4,C4,E4];
   d = A4;
-  print(c[3]);
+  c[0] = [1,2,3];
+  c[1][1] = Gb7;
+  print(c);
 }

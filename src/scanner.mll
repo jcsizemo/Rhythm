@@ -17,7 +17,6 @@ rule token = parse
 | '/'      { SHORTER }
 | '='      { ASSIGN }
 | ':'	   { COLON }
-| ','      { ARRAY_SEP }
 | "::"	   { CONCAT }
 | "!:"	   { REMOVE }
 | "=="     		{ EQ }

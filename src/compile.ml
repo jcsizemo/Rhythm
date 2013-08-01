@@ -49,10 +49,10 @@ let translate (globals, functions) =
           with Not_found -> try [Lod (StringMap.find s env.global_index)]
           with Not_found -> raise (Failure ("undeclared variable " ^ s)))
       | Binop (e1, op, e2) -> expr e1 @ expr e2 @ [Bin op]
-      | Assign (s, e) -> expr e @
+      (*| Assign (s, e) -> expr e @
 	  (try [Sfp (StringMap.find s env.local_index)]
   	  with Not_found -> try [Str (StringMap.find s env.global_index)]
-	  with Not_found -> raise (Failure ("undeclared variable " ^ s)))
+	  with Not_found -> raise (Failure ("undeclared variable " ^ s)))*)
       | Call (fname, actuals) -> (try
 	  (List.concat (List.map expr (List.rev actuals))) @
 	  [Jsr (StringMap.find fname env.function_index) ]   
