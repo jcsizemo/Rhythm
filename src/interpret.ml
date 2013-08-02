@@ -95,8 +95,9 @@ let run (vars, funcs) =
 	  let v, env = eval env e in
 	  let rec print = function
 	  	Literal(i) -> string_of_int i
-	  	| Note(v) -> v
-	  	| Array(v) -> "[" ^ build v ^ "]" and build = function
+	  	| Note(n) -> n
+	  	| Id(i) -> let expr, vars = eval env (Id(i)) in print expr;
+	  	| Array(a) -> "[" ^ build a ^ "]" and build = function
 	  							hd :: [] -> (print hd)
 	  							| hd :: tl -> ((print hd) ^ "," ^ (build tl))
 	  	| _ ->  "Something else"
