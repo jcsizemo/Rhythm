@@ -63,20 +63,7 @@ let run (vars, funcs) =
 	  							| Index(e,i) -> getRoot (i :: iList) e
 	  							| _ -> raise (Failure ("This object is not an array")) in
 	  						getRoot [i] e in
-
-	  					let e =
-	  					if (NameMap.mem arrName locals) then
-	  						NameMap.find arrName locals
-	  					else if (NameMap.mem arrName globals) then
-	  						NameMap.find arrName globals
-	  					else
-	  						raise (Failure ("Array variable not found in memory"))
-	  					in let eList =
-	  						(match e with
-	  						Array(a) -> a
-	  						| _ -> raise (Failure ("Variable in memory not an array")))
-	  					in
-	  						let rec swap exps = function
+	  					let rec swap exps = function
 	  						hd :: [] -> let arr = (Array.of_list exps)
 	  							in
 	  							arr.(hd) <- v; Array.to_list arr
@@ -87,10 +74,23 @@ let run (vars, funcs) =
 	  									| _ -> raise (Failure ("Bad index")) 
 	  							in
 	  							arr.(hd) <- Array(swap piece tl); Array.to_list arr
-	  					in
+	  						in
+	  					if (NameMap.mem arrName locals) then
+	  						let eList = (match (NameMap.find arrName locals) with
+	  							Array(a) -> a
+	  							| _ -> raise (Failure ("Variable in memory not an array"))) in
 	  						let newArray = Array(swap eList indices) in
 	  						v, (NameMap.add arrName newArray locals, globals)
+	  					else if (NameMap.mem arrName globals) then
+	  						let eList = (match (NameMap.find arrName globals) with
+	  							Array(a) -> a
+	  							| _ -> raise (Failure ("Variable in memory not an array"))) in
+	  						let newArray = Array(swap eList indices) in
+	  						v, (locals, NameMap.add arrName newArray globals)
+	  					else
+	  						raise (Failure ("Array variable not found in memory"))
 	  	| _ -> raise (Failure ("Can only assign variables or array segments")))
+
       | Call("print", [e]) ->
 	  let v, env = eval env e in
 	  let rec print = function

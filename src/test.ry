@@ -8,8 +8,8 @@ main()
   def d;
 
   a = [B4,C4,E4];
-  b = [[[[[a]]],a,a,[a]],1];
-  print(b);
+  a[1] = [1,2,3];
+  print(a);
 }
 
 /*[B4,C4,E4]
