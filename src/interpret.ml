@@ -70,7 +70,7 @@ let run (vars, funcs) =
 	  					else if (NameMap.mem arrName globals) then
 	  						NameMap.find arrName globals
 	  					else
-	  						raise (Failure ("Attempting to reassign a piece of a non-existent array"))
+	  						raise (Failure ("Array variable not found in memory"))
 	  					in let eList =
 	  						(match e with
 	  						Array(a) -> a
@@ -84,7 +84,7 @@ let run (vars, funcs) =
 	  							in
 	  							let piece = match arr.(hd) with
 	  									Array(x) -> x
-	  									| _ -> raise (Failure ("Indexed object not an array")) 
+	  									| _ -> raise (Failure ("Bad index")) 
 	  							in
 	  							arr.(hd) <- Array(swap piece tl); Array.to_list arr
 	  					in
