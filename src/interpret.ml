@@ -58,11 +58,12 @@ let run (vars, funcs) =
 	  	else
 	  		v, (NameMap.add name v locals, globals)
 	  	| Index(e,i) -> let arrName, indices =
-	  					let rec getRoot iList = function
-	  					Id(name) -> name, iList
-	  					| Index(a,b) -> getRoot (b :: iList) a
-	  					| _ -> raise (Failure ("This object is not an array")) in
-	  					getRoot [i] e in
+	  						let rec getRoot iList = function
+	  							Id(name) -> name, iList
+	  							| Index(e,i) -> getRoot (i :: iList) e
+	  							| _ -> raise (Failure ("This object is not an array")) in
+	  						getRoot [i] e in
+
 	  					let e =
 	  					if (NameMap.mem arrName locals) then
 	  						NameMap.find arrName locals
@@ -75,26 +76,19 @@ let run (vars, funcs) =
 	  						Array(a) -> a
 	  						| _ -> raise (Failure ("Variable in memory not an array")))
 	  					in
-	  						(*let rec swap exps = function
+	  						let rec swap exps = function
 	  						hd :: [] -> let arr = (Array.of_list exps)
 	  							in
 	  							arr.(hd) <- v; Array.to_list arr
 	  						| hd :: tl -> 	let arr = (Array.of_list exps)
 	  							in
-	  							let piece = arr.(hd) in
-	  							arr.(hd) <- Array(swap [piece] tl); Array.to_list arr
+	  							let piece = match arr.(hd) with
+	  									Array(x) -> x
+	  									| _ -> raise (Failure ("Indexed object not an array")) 
+	  							in
+	  							arr.(hd) <- Array(swap piece tl); Array.to_list arr
 	  					in
 	  						let newArray = Array(swap eList indices) in
-	  						v, (NameMap.add arrName newArray locals, globals)*)
-	  						let rec swap = function
-	  						hd :: [] -> let arr = (Array.of_list eList)
-	  									in
-	  									arr.(hd) <- v; Array.to_list arr
-	  						| hd :: tl -> 	let arr = (Array.of_list eList)
-	  										in
-	  										arr.(hd) <- Array(swap tl); Array.to_list arr
-	  					in
-	  						let newArray = Array(swap indices) in
 	  						v, (NameMap.add arrName newArray locals, globals)
 	  	| _ -> raise (Failure ("Can only assign variables or array segments")))
       | Call("print", [e]) ->
