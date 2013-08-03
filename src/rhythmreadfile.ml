@@ -1,4 +1,4 @@
-(*from TaML language*)
+(*edited from TaML language*)
 
 open Parser
 open Scanner
