@@ -10,11 +10,6 @@ end)
 exception ReturnException of expr * expr NameMap.t
 
 (* Main entry point: run a program *)
-
-let plus_lit num1 num2 env =
-	1;;
-
-
 let run (vars, funcs) =
   (* Put function declarations in a symbol table *)
   let func_decls = List.fold_left
@@ -55,14 +50,28 @@ let run (vars, funcs) =
 	     			| _ -> raise (Failure ("Invalid Minus Operation")))
 	       	|Equal -> 
 	     		(match (v1,v2) with
-	     			(Id(n1),Id(n2)) -> Literal(0), env
-	     			| (Literal(l1), Literal(l2)) -> Literal(boolean (v1 = v2)), env
-	     			| _ -> raise (Failure ("Invalid Equal Operation")))	
+	     		    (Literal(l1), Literal(l2)) -> Literal(boolean (v1 = v2)), env
+	     			| _ -> raise (Failure ("Invalid Equal Operation, only support arithmatic")))	
 	     	|Neq ->
 	     		(match (v1,v2) with
-	     			(Id(n1),Id(n2)) -> Literal(0), env
-	     			| (Literal(l1), Literal(l2)) -> Literal(boolean (v1 != v2)), env
-	     			| _ -> raise (Failure ("Invalid NotEqual Operation")))	
+	     			(Literal(l1), Literal(l2)) -> Literal(boolean (v1 != v2)), env
+	     			| _ -> raise (Failure ("Invalid NotEqual Operation,  only support arithmatic")))	
+	     	|Less -> 
+	     		(match (v1,v2) with
+	     			(Literal(l1), Literal(l2)) -> Literal(boolean (v1 < v2)), env
+	     			| _ -> raise (Failure ("Invalid Equal Operation, only support arithmatic")))	
+	     	|Leq ->
+	     		(match (v1,v2) with
+	     			(Literal(l1), Literal(l2)) -> Literal(boolean (v1 <= v2)), env
+	     			| _ -> raise (Failure ("Invalid NotEqual Operation,  only support arithmatic")))	
+	     	|Greater -> 
+	     		(match (v1,v2) with
+	     			(Literal(l1), Literal(l2)) -> Literal(boolean (v1 > v2)), env
+	     			| _ -> raise (Failure ("Invalid Equal Operation, only support arithmatic")))	
+	     	|Geq ->
+	     		(match (v1,v2) with
+	     			(Literal(l1), Literal(l2)) -> Literal(boolean (v1 >= v2)), env
+	     			| _ -> raise (Failure ("Invalid NotEqual Operation,  only support arithmatic")))
 	    | _ ->raise (Failure ("other binops")))
 
 
@@ -167,20 +176,27 @@ let run (vars, funcs) =
     let rec exec env = function
 	Block(stmts) -> List.fold_left exec env stmts
       | Expr(e) -> let _, env = eval env e in env
-      (*| If(e, s1, s2) ->
+      | If(e, s1, s2) ->
 	  let v, env = eval env e in
-	  exec env (if v != 0 then s1 else s2)
+	  (match v with
+	  		Literal(l) ->  exec env (if l != 0 then s1 else s2)
+	  		| _ -> raise (Failure ("Error: If only support arithmatic")))
       | While(e, s) ->
 	  let rec loop env =
 	    let v, env = eval env e in
-	    if v != 0 then loop (exec env s) else env
-	  in loop env
+	    (match v with
+	    	Literal(l) -> if (l != 0) then loop (exec env s) else env
+	    	| _ -> raise (Failure ("Error: While only support arithmatic")))
+	  in loop env 
 	  | Loop(e1, e2, s) ->
 	    let _, env = eval env e1 in
             let rec loop env =
 	    let v, env = eval env e2 in
-	    if v != 0 then loop (exec env s) else env
-	  in loop env	   *)
+	    (match v with
+	    	Literal(l) -> if (l != 0) then loop (exec env s) else env
+	     	| _ -> raise (Failure ("Error: Loop only support arithmatic")))
+	    
+	  in loop env	  
 	  | Return(e) ->
 	  let v, (locals, globals) = eval env e in
 	  raise (ReturnException(v, globals)) 

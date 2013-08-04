@@ -19,6 +19,10 @@ rule token = parse
 | ':'	   { COLON }
 | "::"	   { CONCAT }
 | "!:"	   { REMOVE }
+| '<'      { LT }
+| "<="     { LEQ }
+| ">"      { GT }
+| ">="     { GEQ }
 | "=="     		{ EQ }
 | "!="     		{ NEQ }
 | "<<"      	{ OCTDOWN }
