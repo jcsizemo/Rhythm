@@ -1,4 +1,4 @@
-OBJS = ast.cmo parser.cmo scanner.cmo interpret.cmo bytecode.cmo compile.cmo execute.cmo rhythm.cmo
+OBJS = ast.cmo parser.cmo scanner.cmo datalib.cmo interpret.cmo bytecode.cmo compile.cmo execute.cmo rhythm.cmo
 
 TESTS = \
 arith1 \
@@ -20,7 +20,7 @@ var1 \
 while1
 
 TARFILES = Makefile testall.sh scanner.mll parser.mly \
-	ast.ml bytecode.ml interpret.ml compile.ml execute.ml rhythm.ml \
+	ast.ml bytecode.ml datalib.ml interpret.ml compile.ml execute.ml rhythm.ml \
 	$(TESTS:%=tests/test-%.mc) \
 	$(TESTS:%=tests/test-%.out)
 
@@ -60,11 +60,11 @@ compile.cmo: bytecode.cmo ast.cmo
 compile.cmx: bytecode.cmx ast.cmx 
 execute.cmo: bytecode.cmo ast.cmo 
 execute.cmx: bytecode.cmx ast.cmx 
-interpret.cmo: ast.cmo 
-interpret.cmx: ast.cmx 
-rhythm.cmo: scanner.cmo parser.cmi interpret.cmo execute.cmo compile.cmo \
+interpret.cmo: ast.cmo datalib.cmo 
+interpret.cmx: ast.cmx datalib.cmx 
+rhythm.cmo: scanner.cmo parser.cmi datalib.cmo interpret.cmo execute.cmo compile.cmo \
     bytecode.cmo ast.cmo 
-rhythm.cmx: scanner.cmx parser.cmx interpret.cmx execute.cmx compile.cmx \
+rhythm.cmx: scanner.cmx parser.cmx datalib.cmx interpret.cmx execute.cmx compile.cmx \
     bytecode.cmx ast.cmx 
 parser.cmo: ast.cmo parser.cmi 
 parser.cmx: ast.cmx parser.cmi 
