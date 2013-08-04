@@ -9,6 +9,10 @@ exception ReturnException of expr * expr NameMap.t
 
 (* Main entry point: run a program *)
 
+let plus_lit num1 num2 env =
+	1;;
+
+
 let run (vars, funcs) =
   (* Put function declarations in a symbol table *)
   let func_decls = List.fold_left
@@ -18,6 +22,8 @@ let run (vars, funcs) =
 
   (* Invoke a function and return an updated global symbol table *)
   let rec call fdecl actuals globals =
+
+
 
 	(* Evaluate an expression and return (value, updated environment) *)
     let rec eval env = function
@@ -29,17 +35,37 @@ let run (vars, funcs) =
 	  		(match v with
 	  		Array(x) -> List.nth x i, env
 	  		| _ -> raise (Failure ("Attempting to index a variable that isn't an array")))
-      (*| Binop(e1, op, e2) ->
-	  let v1, env = eval env e1 in
-          let v2, env = eval env e2 in
-	  let boolean i = if i then 1 else 0 in
-	  (match op with
-	    Plus -> v1 + v2
-	  | Minus -> v1 - v2
-	  | Longer -> v1 * v2
-	  | Shorter -> v1 / v2
-	  | Equal -> boolean (v1 = v2)
-	  | Neq -> boolean (v1 != v2)), env*)
+      | Binop(e1, op, e2) ->
+	    let v1, (locals, globals) = eval env e1 in
+          let v2, (locals, globals) = eval env e2 in
+        let boolean i = if i then 1 else 0 in
+        let locals, globals = env in
+        (match op with
+	    Plus -> 
+	  		let num1 = string_of_expr(e1) in
+	    	let num1_v = (NameMap.find num1 locals) in
+	    	let num1_string = string_of_expr(num1_v) in
+	    	let num1_int = int_of_string num1_string in
+	    	let num2 = string_of_expr(e2) in
+	    	let num2_v = (NameMap.find num2 locals) in
+	    	let num2_string = string_of_expr(num2_v) in
+	    	let num2_int = int_of_string num2_string in
+	  		Literal(num1_int+num2_int)
+	    	(*(match (v1,v2) with
+	    		(Id(n1),Id(n2)) ->
+	    		if (NameMap.mem n1 locals)||(NameMap.mem n2 locals) then
+	    			let a1 = (NameMap.find n1 locals) in
+	    			let a2 = (NameMap.find n2 locals) in
+	    			let a3 = string_of_expr(a1) in
+	    			let a4 = string_of_expr(a2) in
+	    			let a5 = int_of_string(a3) in 
+	    			let a6 = int_of_string(a4) in
+	    			e1
+	    		else if (NameMap.mem n1 globals)||(NameMap.mem n2 globals) then
+	    			e1
+	    		else
+	   	 			raise (Failure ("error in plus")))*)
+	    | _ ->raise (Failure ("other binops"))), env
       | Id(var) ->
 	  let locals, globals = env in
 	  if NameMap.mem var locals then
