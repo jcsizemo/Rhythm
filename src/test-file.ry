@@ -1,0 +1,10 @@
+main()
+{
+  def c;
+  def d;
+
+  c = A5;
+  d = A#6;
+  writeToFile(c);
+  writeToFile(d);
+}
