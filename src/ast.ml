@@ -1,5 +1,4 @@
-type op = Plus | Minus | Longer | Shorter | Equal | Neq | Concat | Remove | Octup
-          | Octdown | Halfup | Halfdown
+type op = Plus | Minus | Longer | Shorter | Equal | Neq | Concat | Remove | Octup | Less | Leq | Greater | Geq | Octdown | Halfup | Halfdown
 
 type expr =
     Literal of int
@@ -37,7 +36,8 @@ let rec string_of_expr = function
       string_of_expr e1 ^ " " ^
       (match o with
   Plus -> "+" | Minus -> "-" | Longer -> "*" | Shorter -> "/"
-      | Equal -> "==" | Neq -> "!=") ^ " " ^
+      | Equal -> "==" | Neq -> "!="
+      | Less -> "<" | Leq -> "<=" | Greater -> ">" | Geq -> ">=") ^ " " ^
       string_of_expr e2
   | Assign(v, e) -> string_of_expr v ^ " = " ^ string_of_expr e
   | Call(f, el) ->

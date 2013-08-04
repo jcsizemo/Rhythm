@@ -4,6 +4,7 @@
 %token COLON
 %token PLUS MINUS LONGER SHORTER ASSIGN CONCAT REMOVE
 %token EQ NEQ OCTDOWN OCTUP HALFUP HALFDOWN
+%token LT LEQ GT GEQ
 %token ASSIGN_PLUS ASSIGN_MINUS ASSIGN_LONGER
 %token ASSIGN_SHORTER ASSIGN_OCTUP ASSIGN_OCTDOWN
 %token ASSIGN_CONCAT ASSIGN_REMOVE
@@ -81,6 +82,10 @@ expr:
   | expr SHORTER expr { Binop($1, Shorter,   $3) }
   | expr EQ     expr { Binop($1, Equal, $3) }
   | expr NEQ    expr { Binop($1, Neq,   $3) }
+  | expr LT     expr { Binop($1, Less, $3) }
+  | expr LEQ     expr { Binop($1, Leq, $3) }
+  | expr GT     expr { Binop($1, Greater, $3) }
+  | expr GEQ     expr { Binop($1, Geq, $3) }
   | expr ASSIGN expr   { Assign($1, $3) }
   | ID LPAREN actuals_opt RPAREN { Call($1, $3) }
   | LPAREN expr RPAREN { $2 }

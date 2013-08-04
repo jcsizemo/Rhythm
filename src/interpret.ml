@@ -8,11 +8,6 @@ end)
 exception ReturnException of expr * expr NameMap.t
 
 (* Main entry point: run a program *)
-
-let plus_lit num1 num2 env =
-	1;;
-
-
 let run (vars, funcs) =
   (* Put function declarations in a symbol table *)
   let func_decls = List.fold_left
@@ -53,14 +48,28 @@ let run (vars, funcs) =
 	     			| _ -> raise (Failure ("Invalid Minus Operation")))
 	       	|Equal -> 
 	     		(match (v1,v2) with
-	     			(Id(n1),Id(n2)) -> Literal(0), env
 	     			| (Literal(l1), Literal(l2)) -> Literal(boolean (v1 = v2)), env
-	     			| _ -> raise (Failure ("Invalid Equal Operation")))	
+	     			| _ -> raise (Failure ("Invalid Equal Operation, only support arithmatic")))	
 	     	|Neq ->
 	     		(match (v1,v2) with
-	     			(Id(n1),Id(n2)) -> Literal(0), env
 	     			| (Literal(l1), Literal(l2)) -> Literal(boolean (v1 != v2)), env
-	     			| _ -> raise (Failure ("Invalid NotEqual Operation")))	
+	     			| _ -> raise (Failure ("Invalid NotEqual Operation,  only support arithmatic")))	
+	     	|Less -> 
+	     		(match (v1,v2) with
+	     			| (Literal(l1), Literal(l2)) -> Literal(boolean (v1 < v2)), env
+	     			| _ -> raise (Failure ("Invalid Equal Operation, only support arithmatic")))	
+	     	|Leq ->
+	     		(match (v1,v2) with
+	     			| (Literal(l1), Literal(l2)) -> Literal(boolean (v1 <= v2)), env
+	     			| _ -> raise (Failure ("Invalid NotEqual Operation,  only support arithmatic")))	
+	     	|Greater -> 
+	     		(match (v1,v2) with
+	     			| (Literal(l1), Literal(l2)) -> Literal(boolean (v1 > v2)), env
+	     			| _ -> raise (Failure ("Invalid Equal Operation, only support arithmatic")))	
+	     	|Geq ->
+	     		(match (v1,v2) with
+	     			| (Literal(l1), Literal(l2)) -> Literal(boolean (v1 >= v2)), env
+	     			| _ -> raise (Failure ("Invalid NotEqual Operation,  only support arithmatic")))
 	    | _ ->raise (Failure ("other binops")))
 
 
