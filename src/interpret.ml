@@ -45,8 +45,23 @@ let run (vars, funcs) =
 	    		(match (v1,v2) with
 	    			(Id(n1),Id(n2)) -> Literal(0), env
 	    			| (Literal(l1), Literal(l2)) -> Literal(l1+l2), env
-	    			| _ -> raise (Failure ("Invalid operation"))
-	    | _ ->raise (Failure ("other binops"))))
+	    			| _ -> raise (Failure ("Invalid Plus Operation")))
+	    	|Minus -> 
+	     		(match (v1,v2) with
+	     			(Id(n1),Id(n2)) -> Literal(0), env
+	     			| (Literal(l1), Literal(l2)) -> Literal(l1-l2), env
+	     			| _ -> raise (Failure ("Invalid Minus Operation")))
+	       	|Equal -> 
+	     		(match (v1,v2) with
+	     			(Id(n1),Id(n2)) -> Literal(0), env
+	     			| (Literal(l1), Literal(l2)) -> Literal(boolean (v1 = v2)), env
+	     			| _ -> raise (Failure ("Invalid Equal Operation")))	
+	     	|Neq ->
+	     		(match (v1,v2) with
+	     			(Id(n1),Id(n2)) -> Literal(0), env
+	     			| (Literal(l1), Literal(l2)) -> Literal(boolean (v1 != v2)), env
+	     			| _ -> raise (Failure ("Invalid NotEqual Operation")))	
+	    | _ ->raise (Failure ("other binops")))
 
 
 
