@@ -50,8 +50,7 @@ let intToNoteMap = IntMap.add 11 "G#" intToNoteMap;;
 let noteToInt = fun x ->
 	let octave = String.get x ((String.length x)-1) in
 		let basicNote = String.sub x 0 ((String.length x)-1) in 
-			(NameMap.find basicNote noteToIntMap) + (int_of_char octave) * 12
-
+			((NameMap.find basicNote noteToIntMap) + ((int_of_char octave)-48) * 12)
 let intToNote = fun x -> 
 	let rec intToNoteRecursive = fun x y ->
 		if x > 11 

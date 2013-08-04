@@ -1,4 +1,6 @@
 open Ast
+open Printf
+open Datalib
 
 module NameMap = Map.Make(struct
   type t = string
@@ -129,7 +131,22 @@ let run (vars, funcs) =
 	in
 		print_endline (print v);
 	  Literal(0), env
-      | Call(f, actuals) ->
+
+
+	| Call("openFile", [e]) -> Literal(0), env
+	| Call("selectTrack", [e]) -> Literal(0), env
+	| Call("writeToFile", [e]) -> let oc = 	open_out_gen [Open_creat; Open_append; Open_text] 0o666 "output.txt" in
+	let v, env = eval env e in
+	let rec print = function
+	  	Literal(i) -> string_of_int i
+	  	| Note(n) -> string_of_int (noteToInt n)
+	  	| _ ->  "Something else"
+	in
+	fprintf oc "%s\n" (print v);
+	close_out oc;
+	Literal(0), env
+
+    | Call(f, actuals) ->
 	  let fdecl =
 	    try NameMap.find f func_decls
 	    with Not_found -> raise (Failure ("undefined function " ^ f))
@@ -138,7 +155,7 @@ let run (vars, funcs) =
 	      (fun (actuals, env) actual ->
 		let v, env = eval env actual in v :: actuals, env)
    	      ([], env) (List.rev actuals)
-	  in
+	  in 
 	  let (locals, globals) = env in
 	  try
 	    let globals = call fdecl actuals globals
