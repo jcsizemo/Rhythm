@@ -42,7 +42,7 @@ let run (vars, funcs) =
         let locals, globals = env in
         (match op with
 	    Plus -> 
-	  		let num1 = string_of_expr(e1) in
+	  		(*let num1 = string_of_expr(e1) in
 	    	let num1_v = (NameMap.find num1 locals) in
 	    	let num1_string = string_of_expr(num1_v) in
 	    	let num1_int = int_of_string num1_string in
@@ -50,8 +50,8 @@ let run (vars, funcs) =
 	    	let num2_v = (NameMap.find num2 locals) in
 	    	let num2_string = string_of_expr(num2_v) in
 	    	let num2_int = int_of_string num2_string in
-	  		Literal(num1_int+num2_int)
-	    	(*(match (v1,v2) with
+	  		Literal(num1_int+num2_int)*)
+	    	(match (v1,v2) with
 	    		(Id(n1),Id(n2)) ->
 	    		if (NameMap.mem n1 locals)||(NameMap.mem n2 locals) then
 	    			let a1 = (NameMap.find n1 locals) in
@@ -64,7 +64,7 @@ let run (vars, funcs) =
 	    		else if (NameMap.mem n1 globals)||(NameMap.mem n2 globals) then
 	    			e1
 	    		else
-	   	 			raise (Failure ("error in plus")))*)
+	   	 			raise (Failure ("error in plus")))
 	    | _ ->raise (Failure ("other binops"))), env
       | Id(var) ->
 	  let locals, globals = env in
