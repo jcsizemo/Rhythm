@@ -1,0 +1,11 @@
+
+main()
+{
+  def c;
+  def d;
+  c = F5.8;
+  d = A7;
+  print(c .* 2);
+  print(d ./ 4);
+}
+
