@@ -28,10 +28,17 @@ let run (vars, funcs) =
       (*| Noexpr -> 1, env (* must be non-zero for the for loop predicate *)*)
 	  | Note(n) -> Note(n), env
 	  | Array(n) -> Array(n), env
-	  | Index(a,i) -> let v, (locals, globals) = eval env a in
-	  		(match v with
-	  		Array(x) -> List.nth x i, env
-	  		| _ -> raise (Failure ("Attempting to index a variable that isn't an array")))
+	  | Index(a,i) -> let v, (locals, globals) = eval env (Id(a)) in
+	  	let rec lookup arr indices = 
+	  		let arr = match arr with
+	  			Array(x) -> x
+	  			| _ -> raise (Failure ("Attempting to index a variable that isn't an array"))
+	  		in
+	  		match indices with
+	  		hd :: [] -> List.nth arr hd, env
+	  		| hd :: tl -> lookup (List.nth arr hd) tl
+	  	in
+	  	lookup v i
       | Binop(e1, op, e2) ->
 	    let v1, (locals, globals) = eval env e1 in
           let v2, (locals, globals) = eval env e2 in
@@ -93,12 +100,7 @@ let run (vars, funcs) =
 	    	v, (locals, NameMap.add name v globals)
 	  	else
 	  		v, (NameMap.add name v locals, globals)
-	  	| Index(e,i) -> let arrName, indices =
-	  						let rec getRoot iList = function
-	  							Id(name) -> name, iList
-	  							| Index(e,i) -> getRoot (i :: iList) e
-	  							| _ -> raise (Failure ("This object is not an array")) in
-	  						getRoot [i] e in
+	  	| Index(arrName,indices) -> 
 	  					let rec swap exps = function
 	  						hd :: [] -> let arr = (Array.of_list exps)
 	  							in
