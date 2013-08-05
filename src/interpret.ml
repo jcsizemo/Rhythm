@@ -47,8 +47,11 @@ let run (vars, funcs) =
         (match op with
 	    	Plus -> 
 	    		(match (v1,v2) with
-	    			(Id(n1),Id(n2)) -> Literal(0), env
+	    			(Note(n1),Note(n2)) -> Array([Note(n1);Note(n2)]), env
 	    			| (Literal(l1), Literal(l2)) -> Literal(l1+l2), env
+	    			| (Note(n1),Literal(l2)) -> Note(intToNote ((noteToInt n1) + l2)), env
+	    			| (Literal(l1),Note(n2)) -> Note(intToNote ((noteToInt n2) + l1)), env
+	    			| (Array(a1),Array(a2)) -> Array(List.rev (List.fold_left (fun newList ele -> ele :: newList) [] a1)), env
 	    			| _ -> raise (Failure ("Invalid Plus Operation")))
 	    	|Minus -> 
 	     		(match (v1,v2) with
