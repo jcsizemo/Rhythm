@@ -52,7 +52,7 @@ rule token = parse
 | "def"    { DEF }
 | ['-']?['0'-'9']+ as lxm { LITERAL(int_of_string lxm) }
 | ['A' - 'G']['b' '#']?['0'-'9'] as lxm { NOTE(lxm) }
-| ['A' - 'G']['b' '#']?['0'-'9']['.']['0'-'9']+ as lxm { NOTE(lxm) }
+| ['A' - 'G']['b' '#']?['0'-'9'](['.']['s' 'e' 'q' 'h' 'w'])? as lxm { NOTE(lxm) }
 | ['a'-'z' 'A'-'Z']['a'-'z' 'A'-'Z' '0'-'9' '_']* as lxm { ID(lxm) }
 | eof { EOF }
 | _ as char { raise (Failure("illegal character " ^ Char.escaped char)) }

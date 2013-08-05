@@ -22,8 +22,9 @@
 %nonassoc ELSE
 %right ASSIGN
 %left EQ NEQ
+%left LT GT LEQ GEQ
 %left PLUS MINUS
-%left TIMES DIVIDE
+%left LONGER SHORTER
 
 %start program
 %type <Ast.program> program
@@ -71,7 +72,6 @@ stmt:
   | WHILE LPAREN expr RPAREN stmt { While($3, $5) }
   | LOOP LPAREN expr COLON expr RPAREN stmt { Loop($3, $5, $7) }
 
-
 expr:
     LITERAL          { Literal($1) }
   | ID               { Id($1) }
@@ -90,7 +90,7 @@ expr:
   | ID LPAREN actuals_opt RPAREN { Call($1, $3) }
   | LPAREN expr RPAREN { $2 }
   | LBRACKET actuals_opt RBRACKET { Array($2) }
-  | expr LBRACKET LITERAL RBRACKET { Index($1,$3) }
+  | ID index_opt { Index($1,$2) }
 
 /* passed in args to a function */
 actuals_opt:
@@ -100,3 +100,10 @@ actuals_opt:
 actuals_list:
     expr                    { [$1] }
   | actuals_list COMMA expr { $3 :: $1 }
+
+index_opt:
+  indices { List.rev $1 }
+
+indices:
+  LBRACKET LITERAL RBRACKET { [$2] }
+  | indices LBRACKET LITERAL RBRACKET {$3 :: $1}
