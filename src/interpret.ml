@@ -51,21 +51,29 @@ let run (vars, funcs) =
 	    			| (Literal(l1), Literal(l2)) -> Literal(l1+l2), env
 	    			| (Note(n1),Literal(l2)) -> Note(intToNote ((noteToInt n1) + l2)), env
 	    			| (Literal(l1),Note(n2)) -> Note(intToNote ((noteToInt n2) + l1)), env
-	    			| (Array(a1),Array(a2)) ->  let merge big small =
+	    			| (Array(a1),Array(a2)) ->  let merge = function
+	    											(Array(x),Array(y)) -> print_endline "ARRS"; Array([Array(x);Array(y)])
+	    											| (Array(x), Note(y)) -> print_endline "ARRNOTE"; Array(x @ [Note(y)])
+	    											| (Note(x), Array(y)) -> print_endline "NOTEARR"; Array(y @ [Note(x)])
+	    											| (Note(x), Note(y)) -> print_endline "NOTENOTE"; Array([Note(x);Note(y)])
+	    											| _ -> raise (Failure ("Mixing two operands that cannot be mixed"))
+	    										in
+
+	    										let split big small =
 	    											let arrBig = Array.of_list big
 	    										in
 	    											let working, leftovers =
 	    											Array.to_list (Array.sub arrBig 0 (List.length small)),
 	    											Array.to_list (Array.sub arrBig (List.length small) ((List.length big) - (List.length small)))
 	    										in
-	    											Array((List.map (fun (x,y) -> Array([x;y])) (List.combine working small)) @ leftovers)
+	    											Array((List.map merge (List.combine working small)) @ leftovers)
 	    										in
 	    										if List.length a1 > List.length a2 then
-	    											(merge a1 a2), env
+	    											(split a1 a2), env
 	    										else if List.length a2 > List.length a1 then
-	    											(merge a2 a1), env
+	    											(split a2 a1), env
 	    										else
-	    											Array(List.map (fun (x,y) -> Array([x;y])) (List.combine a1 a2)),env
+	    											Array(List.map merge (List.combine a1 a2)),env
 	    			| _ -> raise (Failure ("Invalid Plus Operation")))
 	    	|Minus -> 
 	     		(match (v1,v2) with
