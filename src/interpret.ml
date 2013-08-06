@@ -51,13 +51,12 @@ let run (vars, funcs) =
 	    			| (Literal(l1), Literal(l2)) -> Literal(l1+l2), env
 	    			| (Note(n1),Literal(l2)) -> Note(intToNote ((noteToInt n1) + l2)), env
 	    			| (Literal(l1),Note(n2)) -> Note(intToNote ((noteToInt n2) + l1)), env
-	    			| (Array(a1),Array(a2)) -> Array(List.rev (List.fold_left (fun newList ele -> ele :: newList) [] a1)), env
+	    			| (Array(a1),Array(a2)) ->  let a1_rev = List.rev(a1) in Array(List.rev(List.fold_left (fun newList ele -> ele :: newList) a1_rev a2)), env
 	    			| _ -> raise (Failure ("Invalid Plus Operation")))
 	    	|Minus -> 
 	     		(match (v1,v2) with
-	     			(Id(n1),Id(n2)) -> Literal(0), env
-	     			| (Literal(l1), Literal(l2)) -> Literal(l1-l2), env
-	     			| _ -> raise (Failure ("Invalid Minus Operation")))
+	     			(Literal(l1), Literal(l2)) -> Literal(l1-l2), env
+	     			| _ -> raise (Failure ("Invalid Minus Operation, only support arithmatic")))
 	       	|Equal -> 
 	     		(match (v1,v2) with
 	     		    (Literal(l1), Literal(l2)) -> Literal(boolean (v1 = v2)), env
@@ -138,9 +137,10 @@ let run (vars, funcs) =
 	  	Literal(i) -> string_of_int i
 	  	| Note(n) -> n
 	  	| Id(i) -> let expr, vars = eval env (Id(i)) in print expr;
-	  	| Array(a) -> "[" ^ build a ^ "]" and build = function
+	  	| Array(a) -> (*print_endline(string_of_int(let arrtmp = Array.of_list a in Array.length(arrtmp)));*)
+	  	 "[" ^ build a ^ "]" and build = function
 	  							hd :: [] -> (print hd)
-	  							| hd :: tl -> ((print hd) ^ "," ^ (build tl))
+	  							| hd :: tl ->  ((print hd) ^ "," ^ (build tl))
 	  	| _ ->  "Something else"
 	in
 		print_endline (print v);
