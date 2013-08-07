@@ -2,19 +2,18 @@
 
 %token SEMI LPAREN RPAREN LBRACE RBRACE COMMA LBRACKET RBRACKET 
 %token COLON
-%token PLUS MINUS LONGER SHORTER ASSIGN CONCAT REMOVE
+%token PLUS MINUS LONGER SHORTER ASSIGN CONCAT
 %token EQ NEQ OCTDOWN OCTUP HALFUP HALFDOWN
 %token LT LEQ GT GEQ
 %token ASSIGN_PLUS ASSIGN_MINUS ASSIGN_LONGER
 %token ASSIGN_SHORTER ASSIGN_OCTUP ASSIGN_OCTDOWN
-%token ASSIGN_CONCAT ASSIGN_REMOVE
+%token ASSIGN_CONCAT
 %token RETURN IF ELSE WHILE LOOP
 %token CLOSEFILE OPENFILE TRUE FALSE TEMPO
 %token STARTTRACK STOPTRACK
 %token <int> LITERAL
 %token <string> ID
 %token <string> NOTE
-%token <string> CHORD
 %token EOF
 %token  DEF
 
@@ -86,6 +85,7 @@ expr:
   | expr LEQ     expr { Binop($1, Leq, $3) }
   | expr GT     expr { Binop($1, Greater, $3) }
   | expr GEQ     expr { Binop($1, Geq, $3) }
+  | expr CONCAT expr { Binop($1, Concat, $3) }
   | expr ASSIGN expr   { Assign($1, $3) }
   | ID LPAREN actuals_opt RPAREN { Call($1, $3) }
   | LPAREN expr RPAREN { $2 }

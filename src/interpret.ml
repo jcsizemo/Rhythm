@@ -51,12 +51,15 @@ let run (vars, funcs) =
 	    			| (Literal(l1), Literal(l2)) -> Literal(l1+l2), env
 	    			| (Note(n1),Literal(l2)) -> Note(intToNote ((noteToInt n1) + l2)), env
 	    			| (Literal(l1),Note(n2)) -> Note(intToNote ((noteToInt n2) + l1)), env
-	    			| (Array(a1),Array(a2)) ->  let merge = function
-	    											(Array(x),Array(y)) -> print_endline "ARRS"; Array([Array(x);Array(y)])
-	    											| (Array(x), Note(y)) -> print_endline "ARRNOTE"; Array(x @ [Note(y)])
-	    											| (Note(x), Array(y)) -> print_endline "NOTEARR"; Array(y @ [Note(x)])
-	    											| (Note(x), Note(y)) -> print_endline "NOTENOTE"; Array([Note(x);Note(y)])
-	    											| _ -> raise (Failure ("Mixing two operands that cannot be mixed"))
+	    			| (Array(a1),Array(a2)) ->  let merge (x,y) =
+	    											Array([x;y])
+	    										(*) = function
+
+	    											(Array(x),Array(y)) -> Array([Array(x);Array(y)])
+	    											| (Array(x), Note(y)) -> Array(x @ [Note(y)])
+	    											| (Note(x), Array(y)) -> Array(y @ [Note(x)])
+	    											| (Note(x), Note(y)) -> Array([Note(x);Note(y)])
+	    											| _ -> raise (Failure ("Mixing two operands that cannot be mixed"))*)
 	    										in
 
 	    										let split big small =
@@ -78,34 +81,43 @@ let run (vars, funcs) =
 	    	|Minus -> 
 	     		(match (v1,v2) with
 	     			(Literal(l1), Literal(l2)) -> Literal(l1-l2), env
-	     			| _ -> raise (Failure ("Invalid Minus Operation, only support arithmatic")))
+	     			| _ -> raise (Failure ("Invalid Minus Operation")))
 	       	|Equal -> 
 	     		(match (v1,v2) with
 	     		    (Literal(l1), Literal(l2)) -> Literal(boolean (v1 = v2)), env
-	     			| _ -> raise (Failure ("Invalid Equal Operation, only support arithmatic")))	
+	     		    | (Note(n1), Note(n2)) -> Literal(boolean (n1 = n2)), env
+	     			| _ -> raise (Failure ("Invalid IsEqual Operation")))	
 	     	|Neq ->
 	     		(match (v1,v2) with
 	     			(Literal(l1), Literal(l2)) -> Literal(boolean (v1 != v2)), env
-	     			| _ -> raise (Failure ("Invalid NotEqual Operation,  only support arithmatic")))	
+	     			| (Note(n1), Note(n2)) -> Literal(boolean (n1 != n2)), env
+	     			| _ -> raise (Failure ("Invalid NotEqual Operation")))	
 	     	|Less -> 
 	     		(match (v1,v2) with
 	     			(Literal(l1), Literal(l2)) -> Literal(boolean (v1 < v2)), env
-	     			| _ -> raise (Failure ("Invalid Equal Operation, only support arithmatic")))	
+	     			| (Note(n1), Note(n2)) -> Literal(boolean ((noteToInt n1) < (noteToInt n2))), env
+	     			| _ -> raise (Failure ("Invalid Less Than Operation")))	
 	     	|Leq ->
 	     		(match (v1,v2) with
 	     			(Literal(l1), Literal(l2)) -> Literal(boolean (v1 <= v2)), env
-	     			| _ -> raise (Failure ("Invalid NotEqual Operation,  only support arithmatic")))	
+	     			| (Note(n1), Note(n2)) -> Literal(boolean ((noteToInt n1) <= (noteToInt n2))), env
+	     			| _ -> raise (Failure ("Invalid Less Than Or Equal Operation")))	
 	     	|Greater -> 
 	     		(match (v1,v2) with
 	     			(Literal(l1), Literal(l2)) -> Literal(boolean (v1 > v2)), env
-	     			| _ -> raise (Failure ("Invalid Equal Operation, only support arithmatic")))	
+	     			| (Note(n1), Note(n2)) -> Literal(boolean ((noteToInt n1) > (noteToInt n2))), env
+	     			| _ -> raise (Failure ("Invalid Greater Than Operation")))	
 	     	|Geq ->
 	     		(match (v1,v2) with
 	     			(Literal(l1), Literal(l2)) -> Literal(boolean (v1 >= v2)), env
-	     			| _ -> raise (Failure ("Invalid NotEqual Operation,  only support arithmatic")))
+	     			| (Note(n1), Note(n2)) -> Literal(boolean ((noteToInt n1) >= (noteToInt n2))), env
+	     			| _ -> raise (Failure ("Invalid Greater Than Or Equal Operation")))
 	     	|Concat->
 	    		(match (v1,v2) with
-	    			(Array(a1),Array(a2)) ->  let a1_rev = List.rev(a1) in Array(List.rev(List.fold_left (fun newList ele -> ele :: newList) a1_rev a2)), env
+	    			(Array(a1),Array(a2)) ->  Array(a1 @ a2), env
+	    			| (Array(a1), Note(n1)) -> Array(a1 @ [Note(n1)]), env
+	    			| (Note(n1), Array(a1)) -> Array([Note(n1)] @ a1), env
+	    			| (Note(n1),Note(n2)) -> Array([Note(n1);Note(n2)]), env
 	    			| _ -> raise (Failure ("Invalid Concatenation Operation")))
 	    | _ ->raise (Failure ("other binops")))
 
