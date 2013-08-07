@@ -1,9 +1,8 @@
-type op = Plus | Minus | Longer | Shorter | Equal | Neq | Concat | Remove | Octup | Less | Leq | Greater | Geq | Octdown | Halfup | Halfdown
+type op = Plus | Minus | Longer | Shorter | Equal | Neq | Concat | Octup | Less | Leq | Greater | Geq | Octdown | Halfup | Halfdown
 
 type expr =
     Literal of int
   | Note of string
-  | Chord of expr
   | Id of string
   | Array of expr list
   | Binop of expr * op * expr

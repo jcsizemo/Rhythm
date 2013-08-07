@@ -18,7 +18,6 @@ rule token = parse
 | '='      { ASSIGN }
 | ':'	   { COLON }
 | "::"	   { CONCAT }
-| "!:"	   { REMOVE }
 | '<'      { LT }
 | "<="     { LEQ }
 | ">"      { GT }
@@ -36,7 +35,6 @@ rule token = parse
 | ">>="			{ ASSIGN_OCTUP }
 | "<<="			{ ASSIGN_OCTDOWN }
 | "::="			{ ASSIGN_CONCAT }
-| "!:="			{ ASSIGN_REMOVE }
 | "if"     		{ IF }
 | "else"   		{ ELSE }
 | "while"  		{ WHILE }
