@@ -8,6 +8,7 @@
 %token ASSIGN_PLUS ASSIGN_MINUS ASSIGN_LONGER
 %token ASSIGN_SHORTER ASSIGN_OCTUP ASSIGN_OCTDOWN
 %token ASSIGN_CONCAT ASSIGN_REMOVE
+%token INCREASE_DURATION DECREASE_DURATION
 %token RETURN IF ELSE WHILE LOOP
 %token CLOSEFILE OPENFILE TRUE FALSE TEMPO
 %token STARTTRACK STOPTRACK
@@ -87,6 +88,8 @@ expr:
   | expr GT     expr { Binop($1, Greater, $3) }
   | expr GEQ     expr { Binop($1, Geq, $3) }
   | expr ASSIGN expr   { Assign($1, $3) }
+  | expr INCREASE_DURATION expr { Binop($1, IncDuration, $3)}
+  | expr DECREASE_DURATION expr { Binop($1, DecDuration, $3)}
   | ID LPAREN actuals_opt RPAREN { Call($1, $3) }
   | LPAREN expr RPAREN { $2 }
   | LBRACKET actuals_opt RBRACKET { Array($2) }

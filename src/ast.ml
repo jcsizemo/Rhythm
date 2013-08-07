@@ -1,4 +1,4 @@
-type op = Plus | Minus | Longer | Shorter | Equal | Neq | Concat | Remove | Octup | Less | Leq | Greater | Geq | Octdown | Halfup | Halfdown
+type op = Plus | Minus | Longer | Shorter | Equal | Neq | Concat | Remove | Octup | Less | Leq | Greater | Geq | Octdown | Halfup | Halfdown | IncDuration | DecDuration
 
 type expr =
     Literal of int

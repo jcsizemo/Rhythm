@@ -57,3 +57,17 @@ let intToNote = fun x ->
 			then intToNoteRecursive (x-12) (y+1) 
 			else (IntMap.find x intToNoteMap) ^ string_of_int x
 	in intToNoteRecursive x 0
+
+let noteToDuration = fun x ->
+		if String.contains x '.' then 
+			 int_of_string(String.sub x ((String.index x '.')+1) ((String.length x) - ((String.index x '.')+1)))
+		else 4
+
+let extractNoteWithoutDuration = fun x ->
+		if String.contains x '.' then 
+			 String.sub x 0 (String.index x '.') 
+		else x
+
+let setNoteDuration = fun x y ->
+		(extractNoteWithoutDuration x) ^ "." ^ (string_of_int y)
+

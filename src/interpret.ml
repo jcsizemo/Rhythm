@@ -79,8 +79,26 @@ let run (vars, funcs) =
 	     		(match (v1,v2) with
 	     			(Literal(l1), Literal(l2)) -> Literal(boolean (v1 >= v2)), env
 	     			| _ -> raise (Failure ("Invalid NotEqual Operation,  only support arithmatic")))
-	    | _ ->raise (Failure ("other binops")))
+	    	|IncDuration -> 
+	    		(match (v1,v2) with
+	    			(Note(n1), Literal(l2)) -> let newDuration = (noteToDuration n1) * l2 in 
+	    			let newNote = setNoteDuration n1 newDuration in
+	    			Note(newNote), env
+	    			| (Literal(l1), Note(n2)) -> let newDuration = (noteToDuration n2) * l1 in 
+	    			let newNote = setNoteDuration n2 newDuration in
+	    			Note(newNote), env
+	    			| _ -> raise (Failure ("Invalid Plus Operation")))
+	    	|DecDuration -> 
+	    		(match (v1,v2) with
+	    			(Note(n1), Literal(l2)) -> let newDuration = (noteToDuration n1) / l2 in 
+	    			let newNote = setNoteDuration n1 newDuration in
+	    			Note(newNote), env
+	    			| (Literal(l1), Note(n2)) -> let newDuration = (noteToDuration n2) / l1 in 
+	    			let newNote = setNoteDuration n2 newDuration in
+	    			Note(newNote), env
+	    			| _ -> raise (Failure ("Invalid Plus Operation")))
 
+	    | _ ->raise (Failure ("other binops")))
 
 
       | Id(var) ->
