@@ -8,7 +8,7 @@ module IntMap = Map.Make(struct
   let compare x y = Pervasives.compare x y
 end)
 
-let maxNoteInt = 127;;
+let maxNoteInt = 120;;
 let minNoteInt = 0;;
 
 let noteToIntMap = NameMap.empty;;
@@ -71,3 +71,8 @@ let extractNoteWithoutDuration = fun x ->
 let setNoteDuration = fun x y ->
 		(extractNoteWithoutDuration x) ^ "." ^ (string_of_int y)
 
+(*
+	if x > maxNoteInt then raise (Failure ("Note higher than allowable threshold"))
+	else if x < minNoteInt then raise (Failure ("Note lower than allowable threshold"))
+	else (IntMap.find (x - 12*(x / 12)) intToNoteMap) ^ (string_of_int (x / 12))
+*)

@@ -1,0 +1,10 @@
+main()
+{
+  a = A0;
+  c = 0;
+  while (c < 120) {
+  	print(a);
+  	a = a + 1;
+  	c = c + 1;
+  }
+}

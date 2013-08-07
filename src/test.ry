@@ -7,9 +7,12 @@ main()
   def c;
   def d;
 
-  a = [[1,2,3],[1,[1,[1,2,3,4,5]]],E4];
-  a[2] = [1,2,[1,2,3],4,5];
-  print(a[2][2][0]);
+  intro = [A4,[B4,C4,D4],C4];
+  bridge = [Gb7,D#8,G#9];
+  print(intro :: bridge);
+  a = A4;
+  a ::= B4;
+  print(a ::= B4);
 }
 
 /*[B4,C4,E4]

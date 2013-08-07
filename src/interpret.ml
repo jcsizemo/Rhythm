@@ -47,38 +47,78 @@ let run (vars, funcs) =
         (match op with
 	    	Plus -> 
 	    		(match (v1,v2) with
-	    			(Id(n1),Id(n2)) -> Literal(0), env
+	    			(Note(n1),Note(n2)) -> Array([Note(n1);Note(n2)]), env
 	    			| (Literal(l1), Literal(l2)) -> Literal(l1+l2), env
+	    			| (Note(n1),Literal(l2)) -> Note(intToNote ((noteToInt n1) + l2)), env
+	    			| (Literal(l1),Note(n2)) -> Note(intToNote ((noteToInt n2) + l1)), env
+	    			| (Array(a1),Array(a2)) ->  let merge (x,y) =
+	    											Array([x;y])
+	    										(*) = function
+
+	    											(Array(x),Array(y)) -> Array([Array(x);Array(y)])
+	    											| (Array(x), Note(y)) -> Array(x @ [Note(y)])
+	    											| (Note(x), Array(y)) -> Array(y @ [Note(x)])
+	    											| (Note(x), Note(y)) -> Array([Note(x);Note(y)])
+	    											| _ -> raise (Failure ("Mixing two operands that cannot be mixed"))*)
+	    										in
+
+	    										let split big small =
+	    											let arrBig = Array.of_list big
+	    										in
+	    											let working, leftovers =
+	    											Array.to_list (Array.sub arrBig 0 (List.length small)),
+	    											Array.to_list (Array.sub arrBig (List.length small) ((List.length big) - (List.length small)))
+	    										in
+	    											Array((List.map merge (List.combine working small)) @ leftovers)
+	    										in
+	    										if List.length a1 > List.length a2 then
+	    											(split a1 a2), env
+	    										else if List.length a2 > List.length a1 then
+	    											(split a2 a1), env
+	    										else
+	    											Array(List.map merge (List.combine a1 a2)),env
 	    			| _ -> raise (Failure ("Invalid Plus Operation")))
 	    	|Minus -> 
 	     		(match (v1,v2) with
-	     			(Id(n1),Id(n2)) -> Literal(0), env
-	     			| (Literal(l1), Literal(l2)) -> Literal(l1-l2), env
+	     			(Literal(l1), Literal(l2)) -> Literal(l1-l2), env
 	     			| _ -> raise (Failure ("Invalid Minus Operation")))
 	       	|Equal -> 
 	     		(match (v1,v2) with
 	     		    (Literal(l1), Literal(l2)) -> Literal(boolean (v1 = v2)), env
-	     			| _ -> raise (Failure ("Invalid Equal Operation, only support arithmatic")))	
+	     		    | (Note(n1), Note(n2)) -> Literal(boolean (n1 = n2)), env
+	     			| _ -> raise (Failure ("Invalid IsEqual Operation")))	
 	     	|Neq ->
 	     		(match (v1,v2) with
 	     			(Literal(l1), Literal(l2)) -> Literal(boolean (v1 != v2)), env
-	     			| _ -> raise (Failure ("Invalid NotEqual Operation,  only support arithmatic")))	
+	     			| (Note(n1), Note(n2)) -> Literal(boolean (n1 != n2)), env
+	     			| _ -> raise (Failure ("Invalid NotEqual Operation")))	
 	     	|Less -> 
 	     		(match (v1,v2) with
 	     			(Literal(l1), Literal(l2)) -> Literal(boolean (v1 < v2)), env
-	     			| _ -> raise (Failure ("Invalid Equal Operation, only support arithmatic")))	
+	     			| (Note(n1), Note(n2)) -> Literal(boolean ((noteToInt n1) < (noteToInt n2))), env
+	     			| _ -> raise (Failure ("Invalid Less Than Operation")))	
 	     	|Leq ->
 	     		(match (v1,v2) with
 	     			(Literal(l1), Literal(l2)) -> Literal(boolean (v1 <= v2)), env
-	     			| _ -> raise (Failure ("Invalid NotEqual Operation,  only support arithmatic")))	
+	     			| (Note(n1), Note(n2)) -> Literal(boolean ((noteToInt n1) <= (noteToInt n2))), env
+	     			| _ -> raise (Failure ("Invalid Less Than Or Equal Operation")))	
 	     	|Greater -> 
 	     		(match (v1,v2) with
 	     			(Literal(l1), Literal(l2)) -> Literal(boolean (v1 > v2)), env
-	     			| _ -> raise (Failure ("Invalid Equal Operation, only support arithmatic")))	
+	     			| (Note(n1), Note(n2)) -> Literal(boolean ((noteToInt n1) > (noteToInt n2))), env
+	     			| _ -> raise (Failure ("Invalid Greater Than Operation")))	
 	     	|Geq ->
 	     		(match (v1,v2) with
 	     			(Literal(l1), Literal(l2)) -> Literal(boolean (v1 >= v2)), env
-	     			| _ -> raise (Failure ("Invalid NotEqual Operation,  only support arithmatic")))
+	     			| (Note(n1), Note(n2)) -> Literal(boolean ((noteToInt n1) >= (noteToInt n2))), env
+	     			| _ -> raise (Failure ("Invalid Greater Than Or Equal Operation")))
+	     	|Concat->
+	    		(match (v1,v2) with
+	    			(Array(a1),Array(a2)) ->  Array(a1 @ a2), env
+	    			| (Array(a1), Note(n1)) -> Array(a1 @ [Note(n1)]), env
+	    			| (Note(n1), Array(a1)) -> Array([Note(n1)] @ a1), env
+	    			| (Note(n1),Note(n2)) -> Array([Note(n1);Note(n2)]), env
+	    			| _ -> raise (Failure ("Invalid Concatenation Operation")))
 	    	|IncDuration -> 
 	    		(match (v1,v2) with
 	    			(Note(n1), Literal(l2)) -> let newDuration = (noteToDuration n1) * l2 in 
@@ -97,9 +137,7 @@ let run (vars, funcs) =
 	    			let newNote = setNoteDuration n2 newDuration in
 	    			Note(newNote), env
 	    			| _ -> raise (Failure ("Invalid Plus Operation")))
-
 	    | _ ->raise (Failure ("other binops")))
-
 
       | Id(var) ->
 	  let locals, globals = env in
@@ -153,9 +191,10 @@ let run (vars, funcs) =
 	  	Literal(i) -> string_of_int i
 	  	| Note(n) -> n
 	  	| Id(i) -> let expr, vars = eval env (Id(i)) in print expr;
-	  	| Array(a) -> "[" ^ build a ^ "]" and build = function
+	  	| Array(a) -> (*print_endline(string_of_int(let arrtmp = Array.of_list a in Array.length(arrtmp)));*)
+	  	 "[" ^ build a ^ "]" and build = function
 	  							hd :: [] -> (print hd)
-	  							| hd :: tl -> ((print hd) ^ "," ^ (build tl))
+	  							| hd :: tl ->  ((print hd) ^ "," ^ (build tl))
 	  	| _ ->  "Something else"
 	in
 		print_endline (print v);
@@ -168,8 +207,8 @@ let run (vars, funcs) =
 	let v, env = eval env e in
 	let rec print = function
 	  	Literal(i) -> string_of_int i
-	  	| Note(n) -> string_of_int (noteToInt n)
-	  	| _ ->  "Something else"
+	  	| Note(n) -> string_of_int (noteToInt n) ^ " " ^ "0"
+| _ ->  "Something else"
 	in
 	fprintf oc "%s\n" (print v);
 	close_out oc;
