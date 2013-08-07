@@ -11,10 +11,8 @@ main()
   bridge = [Gb7,D#8,G#9];
   print(intro :: bridge);
   a = A4;
-  b = B4;
-  print(a :: b);
-  print(bridge :: a);
-  print(a :: bridge);
+  a ::= B4;
+  print(a ::= B4);
 }
 
 /*[B4,C4,E4]

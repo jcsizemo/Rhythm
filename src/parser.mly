@@ -2,11 +2,11 @@
 
 %token SEMI LPAREN RPAREN LBRACE RBRACE COMMA LBRACKET RBRACKET 
 %token COLON
-%token PLUS MINUS LONGER SHORTER ASSIGN CONCAT
+%token PLUS MINUS ASSIGN CONCAT
 %token EQ NEQ OCTDOWN OCTUP HALFUP HALFDOWN
 %token LT LEQ GT GEQ
-%token ASSIGN_PLUS ASSIGN_MINUS ASSIGN_LONGER
-%token ASSIGN_SHORTER ASSIGN_OCTUP ASSIGN_OCTDOWN
+%token ASSIGN_PLUS ASSIGN_MINUS
+%token ASSIGN_OCTUP ASSIGN_OCTDOWN
 %token ASSIGN_CONCAT
 %token RETURN IF ELSE WHILE LOOP
 %token CLOSEFILE OPENFILE TRUE FALSE TEMPO
@@ -19,11 +19,11 @@
 
 %nonassoc NOELSE
 %nonassoc ELSE
-%right ASSIGN
+%right ASSIGN ASSIGN_PLUS ASSIGN_MINUS ASSIGN_OCTUP ASSIGN_OCTDOWN ASSIGN_CONCAT
 %left EQ NEQ
 %left LT GT LEQ GEQ
+%left CONCAT
 %left PLUS MINUS
-%left LONGER SHORTER
 
 %start program
 %type <Ast.program> program
@@ -77,8 +77,6 @@ expr:
   | NOTE             { Note($1) }
   | expr PLUS   expr { Binop($1, Plus,   $3) }
   | expr MINUS  expr { Binop($1, Minus,   $3) }
-  | expr LONGER  expr { Binop($1, Longer,  $3) }
-  | expr SHORTER expr { Binop($1, Shorter,   $3) }
   | expr EQ     expr { Binop($1, Equal, $3) }
   | expr NEQ    expr { Binop($1, Neq,   $3) }
   | expr LT     expr { Binop($1, Less, $3) }
@@ -87,6 +85,11 @@ expr:
   | expr GEQ     expr { Binop($1, Geq, $3) }
   | expr CONCAT expr { Binop($1, Concat, $3) }
   | expr ASSIGN expr   { Assign($1, $3) }
+  | expr ASSIGN_PLUS expr { Assign($1, Binop($1,Plus,$3) )}
+  | expr ASSIGN_MINUS expr { Assign($1, Binop($1,Minus,$3) )}
+  | expr ASSIGN_OCTUP expr { Assign($1, Binop($1,Octup,$3) )}
+  | expr ASSIGN_OCTDOWN expr { Assign($1, Binop($1,Octdown,$3) )}
+  | expr ASSIGN_CONCAT expr { Assign($1, Binop($1,Concat,$3) )}
   | ID LPAREN actuals_opt RPAREN { Call($1, $3) }
   | LPAREN expr RPAREN { $2 }
   | LBRACKET actuals_opt RBRACKET { Array($2) }

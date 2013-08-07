@@ -13,8 +13,6 @@ rule token = parse
 | ','      { COMMA }
 | '+'      { PLUS }
 | '-'      { MINUS }
-| '*'      { LONGER }
-| '/'      { SHORTER }
 | '='      { ASSIGN }
 | ':'	   { COLON }
 | "::"	   { CONCAT }
@@ -30,8 +28,6 @@ rule token = parse
 | "--"			{ HALFDOWN }
 | "+="			{ ASSIGN_PLUS }
 | "-="			{ ASSIGN_MINUS }
-| "*="			{ ASSIGN_LONGER }
-| "/="			{ ASSIGN_SHORTER }
 | ">>="			{ ASSIGN_OCTUP }
 | "<<="			{ ASSIGN_OCTDOWN }
 | "::="			{ ASSIGN_CONCAT }
