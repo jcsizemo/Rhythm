@@ -208,7 +208,7 @@ let run (vars, funcs) =
 	let rec print = function
 	  	Literal(i) -> string_of_int i
 	  	| Note(n) -> string_of_int (noteToInt n) ^ " " ^ string_of_int (noteToDuration n);
-	  	| Rest(n) -> string_of_int (noteToInt n) ^ " " ^ string_of_int (noteToDuration n); 
+	  	(*| Rest(n) -> string_of_int (noteToInt n) ^ " " ^ string_of_int (noteToDuration n);*) 
 		| _ ->  "Something else"
 	in
 	fprintf oc "%s\n" (print v);
