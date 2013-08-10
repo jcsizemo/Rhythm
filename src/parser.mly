@@ -88,7 +88,7 @@ expr:
   | expr CONCAT expr { Binop($1, Concat, $3) }
   | expr ASSIGN expr   { Assign($1, $3) }
   | expr HALFUP { Binop($1, Plus, Literal(1))}
-  | expr HALFDOWN { Binop($1, Minus, Literal(-1))}
+  | expr HALFDOWN { Binop($1, Minus, Literal(1))}
   | expr OCTUP expr   {Binop($1,Octup,$3)}
   | expr OCTDOWN expr   { Binop($1, Octdown, $3)}
   | expr INCREASE_DURATION expr { Binop($1, IncDuration, $3)}

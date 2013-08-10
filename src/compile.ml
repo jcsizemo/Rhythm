@@ -58,6 +58,7 @@ let translate (globals, functions) =
 	  [Jsr (StringMap.find fname env.function_index) ]   
         with Not_found -> raise (Failure ("undefined function " ^ fname)))
       | Noexpr -> []
+      | _ -> []
 
     in let rec stmt = function
 	Block sl     ->  List.concat (List.map stmt sl)
@@ -72,6 +73,7 @@ let translate (globals, functions) =
 	  let b' = stmt b and e' = expr e in
 	  [Bra (1+ List.length b')] @ b' @ e' @
 	  [Bne (-(List.length b' + List.length e'))]
+      | _ -> []
 
     in (*[Ent num_locals] @ *)     (* Entry: allocate space for locals *)
     stmt (Block fdecl.body) @  (* Body *)

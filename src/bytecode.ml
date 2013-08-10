@@ -39,6 +39,7 @@ let string_of_stmt = function
   | Beq(i) -> "Beq " ^ string_of_int i
   | Bra(i) -> "Bra " ^ string_of_int i
   | Hlt    -> "Hlt"
+  | _ -> ""
 
 let string_of_prog p =
   string_of_int p.num_globals ^ " global variables\n" ^

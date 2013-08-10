@@ -28,7 +28,8 @@ let execute_prog prog =
       | Longer    -> op1 * op2
       | Shorter     -> op1 / op2
       | Equal   -> boolean (op1 =  op2)
-      | Neq     -> boolean (op1 != op2)) ;
+      | Neq     -> boolean (op1 != op2)
+      | _ -> 1) ;
       exec fp (sp-1) (pc+1)
   | Lod i   -> stack.(sp)   <- globals.(i)  ; exec fp (sp+1) (pc+1)
   | Str i   -> globals.(i)  <- stack.(sp-1) ; exec fp sp     (pc+1)
