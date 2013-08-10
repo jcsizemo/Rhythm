@@ -35,7 +35,8 @@ let run (vars, funcs) =
 	  			| _ -> raise (Failure ("Attempting to index a variable that isn't an array"))
 	  		in
 	  		match indices with
-	  		hd :: [] -> List.nth arr hd, env
+	  		[] -> raise (Failure ("Cannot index empty list"))
+	  		| hd :: [] -> List.nth arr hd, env
 	  		| hd :: tl -> lookup (List.nth arr hd) tl
 	  	in
 	  	lookup v i
@@ -44,13 +45,83 @@ let run (vars, funcs) =
           let v2, (locals, globals) = eval env e2 in
         let boolean i = if i then 1 else 0 in
         let locals, globals = env in
+	    	let rec goThroughArray op e l =
+	    		(match op with
+	    			Plus -> (match e with
+	    				Note(n) -> (match l with
+	    								hd :: [] -> (match hd with
+	    									Array(a2) -> [Array((goThroughArray op (Note(n)) a2))]
+	    									| Note(n2) -> [Array([Note(n2);Note(n)])])
+	    								| hd :: tl -> (match hd with
+	    									Array(a2) -> [Array((goThroughArray op (Note(n)) a2))]
+	    									| Note(n2) -> [Array([Note(n2);Note(n)])]) @ (goThroughArray op (Note(n)) tl))
+	    				| Literal(lit) -> (match l with 
+	    								hd :: [] -> (match hd with
+	    									Array(a2) -> [Array((goThroughArray op (Literal(lit)) a2))]
+	    									| Note(n2) -> [Note( (intToNote ((noteToInt n2) + lit)))])
+	    								| hd :: tl -> (match hd with
+	    									Array(a2) -> [Array((goThroughArray op (Literal(lit)) a2))]
+	    									| Note(n2) -> [Note( (intToNote ((noteToInt n2) + lit)))]) @ (goThroughArray op (Literal(lit)) tl))
+	    				| _ -> raise (Failure ("Unuseable value")))
+	    			| Minus -> (match e with
+	    				Note(n) -> (match l with
+	    								hd :: [] -> (match hd with
+	    									Array(a2) -> [Array((goThroughArray op (Note(n)) a2))]
+	    									| Note(n2) -> [Array([Note(n2);Note(n)])])
+	    								| hd :: tl -> (match hd with
+	    									Array(a2) -> [Array((goThroughArray op (Note(n)) a2))]
+	    									| Note(n2) -> [Array([Note(n2);Note(n)])]) @ (goThroughArray op (Note(n)) tl))
+	    				| Literal(lit) -> (match l with 
+	    								hd :: [] -> (match hd with
+	    									Array(a2) -> [Array((goThroughArray op (Literal(lit)) a2))]
+	    									| Note(n2) -> [Array([Note( (intToNote ((noteToInt n2) + lit)))])])
+	    								| hd :: tl -> (match hd with
+	    									Array(a2) -> [Array((goThroughArray op (Literal(lit)) a2))]
+	    									| Note(n2) -> [Array([Note( (intToNote ((noteToInt n2) + lit)))])]) @ (goThroughArray op (Literal(lit)) tl))
+	    				| _ -> raise (Failure ("Unuseable value")))
+	    			| IncDuration -> (match e with
+	    				Note(n) -> (match l with
+	    								hd :: [] -> (match hd with
+	    									Array(a2) -> [Array((goThroughArray op (Note(n)) a2))]
+	    									| Note(n2) -> [Array([Note(n2);Note(n)])])
+	    								| hd :: tl -> (match hd with
+	    									Array(a2) -> [Array((goThroughArray op (Note(n)) a2))]
+	    									| Note(n2) -> [Array([Note(n2);Note(n)])]) @ (goThroughArray op (Note(n)) tl))
+	    				| Literal(lit) -> (match l with 
+	    								hd :: [] -> (match hd with
+	    									Array(a2) -> [Array((goThroughArray op (Literal(lit)) a2))]
+	    									| Note(n2) -> [Array([Note( (intToNote ((noteToInt n2) + lit)))])])
+	    								| hd :: tl -> (match hd with
+	    									Array(a2) -> [Array((goThroughArray op (Literal(lit)) a2))]
+	    									| Note(n2) -> [Array([Note( (intToNote ((noteToInt n2) + lit)))])]) @ (goThroughArray op (Literal(lit)) tl))
+	    				| _ -> raise (Failure ("Unuseable value")))
+	    			| DecDuration -> (match e with
+	    				Note(n) -> (match l with
+	    								hd :: [] -> (match hd with
+	    									Array(a2) -> [Array((goThroughArray op (Note(n)) a2))]
+	    									| Note(n2) -> [Array([Note(n2);Note(n)])])
+	    								| hd :: tl -> (match hd with
+	    									Array(a2) -> [Array((goThroughArray op (Note(n)) a2))]
+	    									| Note(n2) -> [Array([Note(n2);Note(n)])]) @ (goThroughArray op (Note(n)) tl))
+	    				| Literal(lit) -> (match l with 
+	    								hd :: [] -> (match hd with
+	    									Array(a2) -> [Array((goThroughArray op (Literal(lit)) a2))]
+	    									| Note(n2) -> [Array([Note( (intToNote ((noteToInt n2) + lit)))])])
+	    								| hd :: tl -> (match hd with
+	    									Array(a2) -> [Array((goThroughArray op (Literal(lit)) a2))]
+	    									| Note(n2) -> [Array([Note( (intToNote ((noteToInt n2) + lit)))])]) @ (goThroughArray op (Literal(lit)) tl))
+	    				| _ -> raise (Failure ("Unuseable value"))))
+	    		in
         (match op with
-	    	Plus -> 
-	    		(match (v1,v2) with
+	    	Plus -> (match (v1,v2) with
 	    			(Note(n1),Note(n2)) -> Array([Note(n1);Note(n2)]), env
 	    			| (Literal(l1), Literal(l2)) -> Literal(l1+l2), env
 	    			| (Note(n1),Literal(l2)) -> Note(intToNote ((noteToInt n1) + l2)), env
 	    			| (Literal(l1),Note(n2)) -> Note(intToNote ((noteToInt n2) + l1)), env
+	    			| (Array(a),Note(n)) -> Array(goThroughArray Plus (Note(n)) a), env
+	    			| (Note(n),Array(a)) -> Array(goThroughArray Plus (Note(n)) a), env
+	    			| (Array(a),Literal(l)) -> Array(goThroughArray Plus (Literal(l)) a), env
+	    			| (Literal(l),Array(a)) -> Array(goThroughArray Plus (Literal(l)) a), env
 	    			| (Array(a1),Array(a2)) ->  let merge (x,y) =
 	    											Array([x;y])
 	    										(*) = function
@@ -119,7 +190,15 @@ let run (vars, funcs) =
 	    			| (Note(n1), Array(a1)) -> Array([Note(n1)] @ a1), env
 	    			| (Note(n1),Note(n2)) -> Array([Note(n1);Note(n2)]), env
 	    			| _ -> raise (Failure ("Invalid Concatenation Operation")))
-	    	|IncDuration -> 
+	    	|Octup ->
+	    		(match v2 with
+	    			Literal(l) -> eval env (Binop(v1, Plus, Literal(12*l)))
+	    			| _ -> raise (Failure ("Can only do octave shifts with integers")))
+	    	|Octdown ->
+	    		(match v2 with
+	    			Literal(l) -> eval env (Binop(v1, Minus, Literal(12*l)))
+	    			| _ -> raise (Failure ("Can only do octave shifts with integers")))
+	    	|IncDuration ->
 	    		(match (v1,v2) with
 	    			(Note(n1), Literal(l2)) -> let newDuration = (noteToDuration n1) * l2 in 
 	    			let newNote = setNoteDuration n1 newDuration in
@@ -127,7 +206,7 @@ let run (vars, funcs) =
 	    			| (Literal(l1), Note(n2)) -> let newDuration = (noteToDuration n2) * l1 in 
 	    			let newNote = setNoteDuration n2 newDuration in
 	    			Note(newNote), env
-	    			| _ -> raise (Failure ("Invalid Plus Operation")))
+	    			| _ -> raise (Failure ("Invalid Increase Duration Operation")))
 	    	|DecDuration -> 
 	    		(match (v1,v2) with
 	    			(Note(n1), Literal(l2)) -> let newDuration = (noteToDuration n1) / l2 in 
@@ -136,8 +215,8 @@ let run (vars, funcs) =
 	    			| (Literal(l1), Note(n2)) -> let newDuration = (noteToDuration n2) / l1 in 
 	    			let newNote = setNoteDuration n2 newDuration in
 	    			Note(newNote), env
-	    			| _ -> raise (Failure ("Invalid Plus Operation")))
-	    | _ ->raise (Failure ("other binops")))
+	    			| _ -> raise (Failure ("Invalid Decrease Duration Operation")))
+	    | _ ->raise (Failure ("Invalid operation")))
 
       | Id(var) ->
 	  let locals, globals = env in

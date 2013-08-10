@@ -52,11 +52,14 @@ let noteToInt = fun x ->
 		let basicNote = String.sub x 0 ((String.length x)-1) in 
 			((NameMap.find basicNote noteToIntMap) + ((int_of_char octave)-48) * 12)
 let intToNote = fun x -> 
-	let rec intToNoteRecursive = fun x y ->
+	(*let rec intToNoteRecursive = fun x y ->
 		if x > 11 
 			then intToNoteRecursive (x-12) (y+1) 
 			else (IntMap.find x intToNoteMap) ^ string_of_int x
-	in intToNoteRecursive x 0
+	in intToNoteRecursive x 0*)
+	if x > maxNoteInt then raise (Failure ("Note higher than allowable threshold"))
+		else if x < minNoteInt then raise (Failure ("Note lower than allowable threshold"))
+		else (IntMap.find (x - 12*(x / 12)) intToNoteMap) ^ (string_of_int (x / 12))
 
 let noteToDuration = fun x ->
 		if String.contains x '.' then 
