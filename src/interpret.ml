@@ -87,11 +87,15 @@ let run (vars, funcs) =
 	    								[] -> raise (Failure ("Cannot perform operation on an empty array"))
 	    								| hd :: [] -> (match hd with
 	    									Array(a2) -> [Array((goThroughArray op (Literal(lit)) a2))]
-	    									| Note(n2) -> [Note( (intToNote ((noteToInt n2) - lit)))]
+	    									| Note(n2) -> let newDuration = (noteToDuration n2) * lit in 
+	    													let newNote = setNoteDuration n2 newDuration in
+	    													[Note(newNote)]
 	    									| _ -> raise (Failure ("Illegal array value")))
 	    								| hd :: tl -> (match hd with
 	    									Array(a2) -> [Array((goThroughArray op (Literal(lit)) a2))]
-	    									| Note(n2) -> [Note( (intToNote ((noteToInt n2) - lit)))] @ (goThroughArray op (Literal(lit)) tl)
+	    									| Note(n2) -> let newDuration = (noteToDuration n2) * lit in 
+	    													let newNote = setNoteDuration n2 newDuration in
+	    													[Note(newNote)] @ (goThroughArray op (Literal(lit)) tl)
 	    									| _ -> raise (Failure ("Illegal array value"))))
 	    				| _ -> raise (Failure ("Unuseable value")))
 	    			| DecDuration -> (match e with
@@ -99,11 +103,15 @@ let run (vars, funcs) =
 	    								[] -> raise (Failure ("Cannot perform operation on an empty array"))
 	    								| hd :: [] -> (match hd with
 	    									Array(a2) -> [Array((goThroughArray op (Literal(lit)) a2))]
-	    									| Note(n2) -> [Note( (intToNote ((noteToInt n2) - lit)))]
+	    									| Note(n2) -> let newDuration = (noteToDuration n2) / lit in 
+	    													let newNote = setNoteDuration n2 newDuration in
+	    													[Note(newNote)]
 	    									| _ -> raise (Failure ("Illegal array value")))
 	    								| hd :: tl -> (match hd with
 	    									Array(a2) -> [Array((goThroughArray op (Literal(lit)) a2))]
-	    									| Note(n2) -> [Note( (intToNote ((noteToInt n2) - lit)))] @ (goThroughArray op (Literal(lit)) tl)
+	    									| Note(n2) -> let newDuration = (noteToDuration n2) / lit in 
+	    													let newNote = setNoteDuration n2 newDuration in
+	    													[Note(newNote)] @ (goThroughArray op (Literal(lit)) tl)
 	    									| _ -> raise (Failure ("Illegal array value"))))
 	    				| _ -> raise (Failure ("Unuseable value")))
 	    			| _ -> raise (Failure ("Illegal operation")))
@@ -195,6 +203,8 @@ let run (vars, funcs) =
 	    			| (Literal(l1), Note(n2)) -> let newDuration = (noteToDuration n2) * l1 in 
 	    			let newNote = setNoteDuration n2 newDuration in
 	    			Note(newNote), env
+	    			| (Array(a),Literal(l)) -> Array(goThroughArray IncDuration (Literal(l)) a), env
+	    			| (Literal(l),Array(a)) -> Array(goThroughArray IncDuration (Literal(l)) a), env
 	    			| _ -> raise (Failure ("Invalid Increase Duration Operation")))
 	    	|DecDuration -> 
 	    		(match (v1,v2) with
@@ -204,6 +214,8 @@ let run (vars, funcs) =
 	    			| (Literal(l1), Note(n2)) -> let newDuration = (noteToDuration n2) / l1 in 
 	    			let newNote = setNoteDuration n2 newDuration in
 	    			Note(newNote), env
+	    			| (Array(a),Literal(l)) -> Array(goThroughArray DecDuration (Literal(l)) a), env
+	    			| (Literal(l),Array(a)) -> Array(goThroughArray DecDuration (Literal(l)) a), env
 	    			| _ -> raise (Failure ("Invalid Decrease Duration Operation")))
 	    | _ ->raise (Failure ("Invalid operation")))
 
