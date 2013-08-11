@@ -63,11 +63,16 @@ let run (vars, funcs) =
 	    								[] -> raise (Failure ("Cannot perform operation on an empty array"))
 	    								| hd :: [] -> (match hd with
 	    									Array(a2) -> [Array((goThroughArray op (Literal(lit)) a2))]
-	    									| Note(n2) -> [Note( (intToNote ((noteToInt n2) + lit)))]
+	    									| Note(n2) -> 	let dur = noteToDuration n2 in
+	    													let oldNote = extractNoteWithoutDuration n2 in
+	    													[Note((setNoteDuration (intToNote ((noteToInt oldNote) + lit))) dur)]
 	    									| _ -> raise (Failure ("Illegal array value")))
 	    								| hd :: tl -> (match hd with
 	    									Array(a2) -> [Array((goThroughArray op (Literal(lit)) a2))] @ (goThroughArray op (Literal(lit)) tl)
-	    									| Note(n2) -> [Note( (intToNote ((noteToInt n2) + lit)))] @ (goThroughArray op (Literal(lit)) tl)
+	    									| Note(n2) -> 	let dur = noteToDuration n2 in
+	    													let oldNote = extractNoteWithoutDuration n2 in
+	    													[Note((setNoteDuration (intToNote ((noteToInt oldNote) + lit))) dur)] 
+	    														@ (goThroughArray op (Literal(lit)) tl)
 	    									| _ -> raise (Failure ("Illegal array value"))))
 	    				| _ -> raise (Failure ("Unuseable value")))
 	    			| Minus -> (match e with
@@ -75,11 +80,16 @@ let run (vars, funcs) =
 	    								[] -> raise (Failure ("Cannot perform operation on an empty array")) 
 	    								| hd :: [] -> (match hd with
 	    									Array(a2) -> [Array((goThroughArray op (Literal(lit)) a2))]
-	    									| Note(n2) -> [Note( (intToNote ((noteToInt n2) - lit)))]
+	    									| Note(n2) -> 	let dur = noteToDuration n2 in
+	    													let oldNote = extractNoteWithoutDuration n2 in
+	    													[Note((setNoteDuration (intToNote ((noteToInt oldNote) - lit))) dur)]
 	    									| _ -> raise (Failure ("Illegal array value")))
 	    								| hd :: tl -> (match hd with
 	    									Array(a2) -> [Array((goThroughArray op (Literal(lit)) a2))] @ (goThroughArray op (Literal(lit)) tl)
-	    									| Note(n2) -> [Note( (intToNote ((noteToInt n2) - lit)))] @ (goThroughArray op (Literal(lit)) tl)
+	    									| Note(n2) -> 	let dur = noteToDuration n2 in
+	    													let oldNote = extractNoteWithoutDuration n2 in
+	    													[Note((setNoteDuration (intToNote ((noteToInt oldNote) - lit))) dur)] 
+	    														@ (goThroughArray op (Literal(lit)) tl)
 	    									| _ -> raise (Failure ("Illegal array value"))))
 	    				| _ -> raise (Failure ("Unuseable value")))
 	    			| IncDuration -> (match e with
