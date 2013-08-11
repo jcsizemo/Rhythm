@@ -7,11 +7,11 @@ main()
   def c;
   def d;
 
-  intro = [A4,[B4,C4,D4],E4];
+  intro = [A4.1,[B4.2,C4.4,D4.8],E4.16];
   bridge = [Gb7,D#8,E#9];
   notes = [A4,A#4,B4,C4,C#4,D4,D#4,E4,F4,F#4,G4,G#4];
   test = [A4.2, [B4, C4], D4];
-  print(test++);
+  print(A4 + 2 / 2);
 }
 
 /*[B4,C4,E4]

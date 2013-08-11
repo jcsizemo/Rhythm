@@ -130,8 +130,12 @@ let run (vars, funcs) =
 	    	Plus -> (match (v1,v2) with
 	    			(Note(n1),Note(n2)) -> Array([Note(n1);Note(n2)]), env
 	    			| (Literal(l1), Literal(l2)) -> Literal(l1+l2), env
-	    			| (Note(n1),Literal(l2)) -> Note(intToNote ((noteToInt n1) + l2)), env
-	    			| (Literal(l1),Note(n2)) -> Note(intToNote ((noteToInt n2) + l1)), env
+	    			| (Note(n1),Literal(l2)) -> let dur = noteToDuration n1 in
+	    										let oldNote = extractNoteWithoutDuration n1 in
+	    										Note((setNoteDuration (intToNote ((noteToInt oldNote) + l2))) dur), env
+	    			| (Literal(l1),Note(n2)) -> let dur = noteToDuration n2 in
+	    										let oldNote = extractNoteWithoutDuration n2 in
+	    										Note((setNoteDuration (intToNote ((noteToInt oldNote) + l1))) dur), env
 	    			| (Array(a),Note(n)) -> Array(goThroughArray Plus (Note(n)) a), env
 	    			| (Note(n),Array(a)) -> Array(goThroughArray Plus (Note(n)) a), env
 	    			| (Array(a),Literal(l)) -> Array(goThroughArray Plus (Literal(l)) a), env
@@ -155,8 +159,12 @@ let run (vars, funcs) =
 	    	|Minus -> 
 	     		(match (v1,v2) with
 	     			(Literal(l1), Literal(l2)) -> Literal(l1-l2), env
-	     			| (Note(n1),Literal(l2)) -> Note(intToNote ((noteToInt n1) - l2)), env
-	    			| (Literal(l1),Note(n2)) -> Note(intToNote ((noteToInt n2) - l1)), env
+	     			| (Note(n1),Literal(l2)) -> let dur = noteToDuration n1 in
+	    										let oldNote = extractNoteWithoutDuration n1 in
+	    										Note((setNoteDuration (intToNote ((noteToInt oldNote) - l2))) dur), env
+	    			| (Literal(l1),Note(n2)) -> let dur = noteToDuration n2 in
+	    										let oldNote = extractNoteWithoutDuration n2 in
+	    										Note((setNoteDuration (intToNote ((noteToInt oldNote) - l1))) dur), env
 	    			| (Array(a),Literal(l)) -> Array(goThroughArray Minus (Literal(l)) a), env
 	    			| (Literal(l),Array(a)) -> Array(goThroughArray Minus (Literal(l)) a), env
 	     			| _ -> raise (Failure ("Invalid Minus Operation")))
@@ -200,11 +208,11 @@ let run (vars, funcs) =
 	    	|Octup ->
 	    		(match v2 with
 	    			Literal(l) -> eval env (Binop(v1, Plus, Literal(12*l)))
-	    			| _ -> raise (Failure ("Can only do octave shifts with integers")))
+	    			| _ -> raise (Failure ("LHS of octave shift must be a note or array, RHS must be an integer")))
 	    	|Octdown ->
 	    		(match v2 with
 	    			Literal(l) -> eval env (Binop(v1, Minus, Literal(12*l)))
-	    			| _ -> raise (Failure ("Can only do octave shifts with integers")))
+	    			| _ -> raise (Failure ("LHS of octave shift must be a note or array, RHS must be an integer")))
 	    	|IncDuration ->
 	    		(match (v1,v2) with
 	    			(Note(n1), Literal(l2)) -> let newDuration = (noteToDuration n1) * l2 in 
