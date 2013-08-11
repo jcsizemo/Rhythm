@@ -16,6 +16,7 @@
 %token <int> LITERAL
 %token <string> ID
 %token <string> NOTE
+%token <string> REST
 %token EOF
 %token  DEF
 
@@ -77,6 +78,7 @@ expr:
     LITERAL          { Literal($1) }
   | ID               { Id($1) }
   | NOTE             { Note($1) }
+  | REST             { Rest($1) }
   | expr PLUS   expr { Binop($1, Plus,   $3) }
   | expr MINUS  expr { Binop($1, Minus,   $3) }
   | expr EQ     expr { Binop($1, Equal, $3) }

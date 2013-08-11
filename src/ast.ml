@@ -3,6 +3,7 @@ type op = Plus | Minus | Longer | Shorter | Equal | Neq | Concat | Octup | Less 
 type expr =
     Literal of int
   | Note of string
+  | Rest of string
   | Id of string
   | Array of expr list
   | Binop of expr * op * expr

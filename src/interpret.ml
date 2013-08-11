@@ -27,6 +27,7 @@ let run (vars, funcs) =
 	Literal(i) -> Literal(i), env
       (*| Noexpr -> 1, env (* must be non-zero for the for loop predicate *)*)
 	  | Note(n) -> Note(n), env
+	  | Rest(n) -> Rest(n), env
 	  | Array(n) -> Array(n), env
 	  | Index(a,i) -> let v, (locals, globals) = eval env (Id(a)) in
 	  	let rec lookup arr indices = 
@@ -86,11 +87,13 @@ let run (vars, funcs) =
 	     		(match (v1,v2) with
 	     		    (Literal(l1), Literal(l2)) -> Literal(boolean (v1 = v2)), env
 	     		    | (Note(n1), Note(n2)) -> Literal(boolean (n1 = n2)), env
+	     		    | (Rest(r1), Note(r2)) -> Literal(boolean (r1 = r2)), env
 	     			| _ -> raise (Failure ("Invalid IsEqual Operation")))	
 	     	|Neq ->
 	     		(match (v1,v2) with
 	     			(Literal(l1), Literal(l2)) -> Literal(boolean (v1 != v2)), env
 	     			| (Note(n1), Note(n2)) -> Literal(boolean (n1 != n2)), env
+	     			| (Rest(r1), Note(r2)) -> Literal(boolean (r1 != r2)), env
 	     			| _ -> raise (Failure ("Invalid NotEqual Operation")))	
 	     	|Less -> 
 	     		(match (v1,v2) with
@@ -116,8 +119,11 @@ let run (vars, funcs) =
 	    		(match (v1,v2) with
 	    			(Array(a1),Array(a2)) ->  Array(a1 @ a2), env
 	    			| (Array(a1), Note(n1)) -> Array(a1 @ [Note(n1)]), env
+	    			| (Array(a1), Rest(r1)) -> Array(a1 @ [Rest(r1)]), env
+	    			| (Rest(r1), Array(a1)) -> Array([Rest(r1)] @ a1), env
 	    			| (Note(n1), Array(a1)) -> Array([Note(n1)] @ a1), env
 	    			| (Note(n1),Note(n2)) -> Array([Note(n1);Note(n2)]), env
+	    			| (Rest(r1),Rest(r2)) -> Array([Rest(r1);Rest(r2)]), env	    			
 	    			| _ -> raise (Failure ("Invalid Concatenation Operation")))
 	    	|IncDuration -> 
 	    		(match (v1,v2) with
@@ -190,6 +196,7 @@ let run (vars, funcs) =
 	  let rec print = function
 	  	Literal(i) -> string_of_int i
 	  	| Note(n) -> n
+	  	| Rest(r) -> r
 	  	| Id(i) -> let expr, vars = eval env (Id(i)) in print expr;
 	  	| Array(a) -> (*print_endline(string_of_int(let arrtmp = Array.of_list a in Array.length(arrtmp)));*)
 	  	 "[" ^ build a ^ "]" and build = function
