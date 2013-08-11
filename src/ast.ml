@@ -39,12 +39,16 @@ let rec string_of_expr = function
     Literal(l) -> string_of_int l
   | Id(i) -> i
   | Note(n) -> n
+  | Index(i,a) -> i
   | Binop(e1, o, e2) ->
       string_of_expr e1 ^ " " ^
       (match o with
   Plus -> "+" | Minus -> "-" | Longer -> "*" | Shorter -> "/"
       | Equal -> "==" | Neq -> "!="
-      | Less -> "<" | Leq -> "<=" | Greater -> ">" | Geq -> ">=") ^ " " ^
+      | Less -> "<" | Leq -> "<=" | Greater -> ">" | Geq -> ">="
+      | Concat -> "::" | Halfup -> "++" | Halfdown -> "--"
+      | Octup -> ">>" | Octdown -> "<<" | IncDuration -> ".*"
+      | DecDuration -> "./") ^ " " ^
       string_of_expr e2
   | Assign(v, e) -> string_of_expr v ^ " = " ^ string_of_expr e
   | Call(f, el) ->

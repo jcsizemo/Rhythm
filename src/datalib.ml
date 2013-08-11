@@ -47,17 +47,6 @@ let intToNoteMap = IntMap.add 9 "F#" intToNoteMap;;
 let intToNoteMap = IntMap.add 10 "G" intToNoteMap;; 
 let intToNoteMap = IntMap.add 11 "G#" intToNoteMap;; 
 
-let noteToInt = fun x ->
-	let octave = String.get x ((String.length x)-1) in
-		let basicNote = String.sub x 0 ((String.length x)-1) in 
-			((NameMap.find basicNote noteToIntMap) + ((int_of_char octave)-48) * 12)
-let intToNote = fun x -> 
-	let rec intToNoteRecursive = fun x y ->
-		if x > 11 
-			then intToNoteRecursive (x-12) (y+1) 
-			else (IntMap.find x intToNoteMap) ^ string_of_int x
-	in intToNoteRecursive x 0
-
 let noteToDuration = fun x ->
 		if String.contains x '.' then 
 			 int_of_string(String.sub x ((String.index x '.')+1) ((String.length x) - ((String.index x '.')+1)))
@@ -71,8 +60,12 @@ let extractNoteWithoutDuration = fun x ->
 let setNoteDuration = fun x y ->
 		(extractNoteWithoutDuration x) ^ "." ^ (string_of_int y)
 
-(*
+let noteToInt = fun x ->
+	let octave = String.get x ((String.length x)-1) in
+		let basicNote = String.sub x 0 ((String.length x)-1) in 
+			((NameMap.find basicNote noteToIntMap) + ((int_of_char octave)-48) * 12)
+
+let intToNote = fun x -> 
 	if x > maxNoteInt then raise (Failure ("Note higher than allowable threshold"))
-	else if x < minNoteInt then raise (Failure ("Note lower than allowable threshold"))
-	else (IntMap.find (x - 12*(x / 12)) intToNoteMap) ^ (string_of_int (x / 12))
-*)
+		else if x < minNoteInt then raise (Failure ("Note lower than allowable threshold"))
+		else (IntMap.find (x - 12*(x / 12)) intToNoteMap) ^ (string_of_int (x / 12))
