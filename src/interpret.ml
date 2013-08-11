@@ -310,7 +310,7 @@ let run (vars, funcs) =
 	let v, env = eval env e in
 	let rec print = function
 	  	Literal(i) -> string_of_int i
-	  	| Note(n) -> string_of_int (noteToInt n) ^ " " ^ "0"
+	  	| Note(n) -> string_of_int (noteToInt n) ^ " " ^ string_of_int(noteToDuration n)
 		| _ ->  "Something else"
 	in
 	fprintf oc "%s\n" (print v);
