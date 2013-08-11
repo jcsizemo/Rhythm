@@ -56,7 +56,7 @@ let run (vars, funcs) =
 	    									| Note(n2) -> [Array([Note(n2);Note(n)])]
 	    									| _ -> raise (Failure ("Illegal array value")))
 	    								| hd :: tl -> (match hd with
-	    									Array(a2) -> [Array((goThroughArray op (Note(n)) a2))]
+	    									Array(a2) -> [Array((goThroughArray op (Note(n)) a2))] @ (goThroughArray op (Note(n)) tl)
 	    									| Note(n2) -> [Array([Note(n2);Note(n)])] @ (goThroughArray op (Note(n)) tl)
 	    									| _ -> raise (Failure ("Illegal array value"))))
 	    				| Literal(lit) -> (match l with 
@@ -66,7 +66,7 @@ let run (vars, funcs) =
 	    									| Note(n2) -> [Note( (intToNote ((noteToInt n2) + lit)))]
 	    									| _ -> raise (Failure ("Illegal array value")))
 	    								| hd :: tl -> (match hd with
-	    									Array(a2) -> [Array((goThroughArray op (Literal(lit)) a2))]
+	    									Array(a2) -> [Array((goThroughArray op (Literal(lit)) a2))] @ (goThroughArray op (Literal(lit)) tl)
 	    									| Note(n2) -> [Note( (intToNote ((noteToInt n2) + lit)))] @ (goThroughArray op (Literal(lit)) tl)
 	    									| _ -> raise (Failure ("Illegal array value"))))
 	    				| _ -> raise (Failure ("Unuseable value")))
@@ -78,7 +78,7 @@ let run (vars, funcs) =
 	    									| Note(n2) -> [Note( (intToNote ((noteToInt n2) - lit)))]
 	    									| _ -> raise (Failure ("Illegal array value")))
 	    								| hd :: tl -> (match hd with
-	    									Array(a2) -> [Array((goThroughArray op (Literal(lit)) a2))]
+	    									Array(a2) -> [Array((goThroughArray op (Literal(lit)) a2))] @ (goThroughArray op (Literal(lit)) tl)
 	    									| Note(n2) -> [Note( (intToNote ((noteToInt n2) - lit)))] @ (goThroughArray op (Literal(lit)) tl)
 	    									| _ -> raise (Failure ("Illegal array value"))))
 	    				| _ -> raise (Failure ("Unuseable value")))
@@ -92,7 +92,7 @@ let run (vars, funcs) =
 	    													[Note(newNote)]
 	    									| _ -> raise (Failure ("Illegal array value")))
 	    								| hd :: tl -> (match hd with
-	    									Array(a2) -> [Array((goThroughArray op (Literal(lit)) a2))]
+	    									Array(a2) -> [Array((goThroughArray op (Literal(lit)) a2))] @ (goThroughArray op (Literal(lit)) tl)
 	    									| Note(n2) -> let newDuration = (noteToDuration n2) * lit in 
 	    													let newNote = setNoteDuration n2 newDuration in
 	    													[Note(newNote)] @ (goThroughArray op (Literal(lit)) tl)
@@ -108,7 +108,7 @@ let run (vars, funcs) =
 	    													[Note(newNote)]
 	    									| _ -> raise (Failure ("Illegal array value")))
 	    								| hd :: tl -> (match hd with
-	    									Array(a2) -> [Array((goThroughArray op (Literal(lit)) a2))]
+	    									Array(a2) -> [Array((goThroughArray op (Literal(lit)) a2))] @ (goThroughArray op (Literal(lit)) tl)
 	    									| Note(n2) -> let newDuration = (noteToDuration n2) / lit in 
 	    													let newNote = setNoteDuration n2 newDuration in
 	    													[Note(newNote)] @ (goThroughArray op (Literal(lit)) tl)
