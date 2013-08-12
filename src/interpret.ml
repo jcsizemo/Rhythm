@@ -59,21 +59,25 @@ let run (vars, funcs) =
 	    								| hd :: [] -> (match hd with
 	    									Array(a2) -> [Array((goThroughArray op (Note(n)) a2))]
 	    									| Note(n2) -> [Array([Note(n2);Note(n)])]
+	    									| Rest(r) -> raise (Failure ("Cannot make chords with rests"))
 	    									| _ -> raise (Failure ("Illegal array value")))
 	    								| hd :: tl -> (match hd with
 	    									Array(a2) -> [Array((goThroughArray op (Note(n)) a2))] @ (goThroughArray op (Note(n)) tl)
 	    									| Note(n2) -> [Array([Note(n2);Note(n)])] @ (goThroughArray op (Note(n)) tl)
+	    									| Rest(r) -> raise (Failure ("Cannot make chords with rests"))
 	    									| _ -> raise (Failure ("Illegal array value"))))
 	    				| Literal(lit) -> (match l with 
 	    								[] -> raise (Failure ("Cannot perform operation on an empty array"))
 	    								| hd :: [] -> (match hd with
 	    									Array(a2) -> [Array((goThroughArray op (Literal(lit)) a2))]
+	    									| Rest(r) -> raise (Failure ("Cannot change the pitch of a rest"))
 	    									| Note(n2) -> 	let dur = noteToDuration n2 in
 	    													let oldNote = extractNoteWithoutDuration n2 in
 	    													[Note((setNoteDuration (intToNote ((noteToInt oldNote) + lit))) dur)]
 	    									| _ -> raise (Failure ("Illegal array value")))
 	    								| hd :: tl -> (match hd with
 	    									Array(a2) -> [Array((goThroughArray op (Literal(lit)) a2))] @ (goThroughArray op (Literal(lit)) tl)
+	    									| Rest(r) -> raise (Failure ("Cannot change the pitch of a rest"))
 	    									| Note(n2) -> 	let dur = noteToDuration n2 in
 	    													let oldNote = extractNoteWithoutDuration n2 in
 	    													[Note((setNoteDuration (intToNote ((noteToInt oldNote) + lit))) dur)] 
@@ -85,12 +89,14 @@ let run (vars, funcs) =
 	    								[] -> raise (Failure ("Cannot perform operation on an empty array")) 
 	    								| hd :: [] -> (match hd with
 	    									Array(a2) -> [Array((goThroughArray op (Literal(lit)) a2))]
+	    									| Rest(r) -> raise (Failure ("Cannot change the pitch of a rest"))
 	    									| Note(n2) -> 	let dur = noteToDuration n2 in
 	    													let oldNote = extractNoteWithoutDuration n2 in
 	    													[Note((setNoteDuration (intToNote ((noteToInt oldNote) - lit))) dur)]
 	    									| _ -> raise (Failure ("Illegal array value")))
 	    								| hd :: tl -> (match hd with
 	    									Array(a2) -> [Array((goThroughArray op (Literal(lit)) a2))] @ (goThroughArray op (Literal(lit)) tl)
+	    									| Rest(r) -> raise (Failure ("Cannot change the pitch of a rest"))
 	    									| Note(n2) -> 	let dur = noteToDuration n2 in
 	    													let oldNote = extractNoteWithoutDuration n2 in
 	    													[Note((setNoteDuration (intToNote ((noteToInt oldNote) - lit))) dur)] 
@@ -105,12 +111,18 @@ let run (vars, funcs) =
 	    									| Note(n2) -> let newDuration = (noteToDuration n2) * lit in 
 	    													let newNote = setNoteDuration n2 newDuration in
 	    													[Note(newNote)]
+	    									| Rest(r) -> let newDuration = (noteToDuration r) * lit in 
+	    													let newRest = setNoteDuration r newDuration in
+	    													[Rest(newRest)]
 	    									| _ -> raise (Failure ("Illegal array value")))
 	    								| hd :: tl -> (match hd with
 	    									Array(a2) -> [Array((goThroughArray op (Literal(lit)) a2))] @ (goThroughArray op (Literal(lit)) tl)
 	    									| Note(n2) -> let newDuration = (noteToDuration n2) * lit in 
 	    													let newNote = setNoteDuration n2 newDuration in
 	    													[Note(newNote)] @ (goThroughArray op (Literal(lit)) tl)
+	    									| Rest(r) -> let newDuration = (noteToDuration r) * lit in 
+	    													let newRest = setNoteDuration r newDuration in
+	    													[Rest(newRest)] @ (goThroughArray op (Literal(lit)) tl)
 	    									| _ -> raise (Failure ("Illegal array value"))))
 	    				| _ -> raise (Failure ("Unuseable value")))
 	    			| DecDuration -> (match e with
@@ -121,12 +133,18 @@ let run (vars, funcs) =
 	    									| Note(n2) -> let newDuration = (noteToDuration n2) / lit in 
 	    													let newNote = setNoteDuration n2 newDuration in
 	    													[Note(newNote)]
+	    									| Rest(r) -> let newDuration = (noteToDuration r) / lit in 
+	    													let newRest = setNoteDuration r newDuration in
+	    													[Rest(newRest)]
 	    									| _ -> raise (Failure ("Illegal array value")))
 	    								| hd :: tl -> (match hd with
 	    									Array(a2) -> [Array((goThroughArray op (Literal(lit)) a2))] @ (goThroughArray op (Literal(lit)) tl)
 	    									| Note(n2) -> let newDuration = (noteToDuration n2) / lit in 
 	    													let newNote = setNoteDuration n2 newDuration in
 	    													[Note(newNote)] @ (goThroughArray op (Literal(lit)) tl)
+	    									| Rest(r) -> let newDuration = (noteToDuration r) / lit in 
+	    													let newRest = setNoteDuration r newDuration in
+	    													[Rest(newRest)] @ (goThroughArray op (Literal(lit)) tl)
 	    									| _ -> raise (Failure ("Illegal array value"))))
 	    				| _ -> raise (Failure ("Unuseable value")))
 	    			| _ -> raise (Failure ("Illegal operation")))
@@ -145,6 +163,8 @@ let run (vars, funcs) =
 	    			| (Note(n),Array(a)) -> Array(goThroughArray Plus (Note(n)) a), env
 	    			| (Array(a),Literal(l)) -> Array(goThroughArray Plus (Literal(l)) a), env
 	    			| (Literal(l),Array(a)) -> Array(goThroughArray Plus (Literal(l)) a), env
+	    			| (Rest(r),Literal(l)) -> raise (Failure ("Cannot change the pitch of a rest"))
+	    			| (Literal(l),Rest(r)) -> raise (Failure ("Cannot change the pitch of a rest"))
 	    			| (Array(a1),Array(a2)) ->  let split big small =
 	    											let arrBig = Array.of_list big
 	    										in
@@ -172,6 +192,8 @@ let run (vars, funcs) =
 	    										Note((setNoteDuration (intToNote ((noteToInt oldNote) - l1))) dur), env
 	    			| (Array(a),Literal(l)) -> Array(goThroughArray Minus (Literal(l)) a), env
 	    			| (Literal(l),Array(a)) -> Array(goThroughArray Minus (Literal(l)) a), env
+	    			| (Rest(r),Literal(l)) -> raise (Failure ("Cannot change the pitch of a rest"))
+	    			| (Literal(l),Rest(r)) -> raise (Failure ("Cannot change the pitch of a rest"))
 	     			| _ -> raise (Failure ("Invalid Minus Operation")))
 	       	|Equal -> 
 	     		(match (v1,v2) with
@@ -231,6 +253,12 @@ let run (vars, funcs) =
 	    			| (Literal(l1), Note(n2)) -> let newDuration = (noteToDuration n2) * l1 in 
 	    			let newNote = setNoteDuration n2 newDuration in
 	    			Note(newNote), env
+	    			| (Rest(r1), Literal(l2)) -> let newDuration = (noteToDuration r1) * l2 in 
+	    			let newRest = setNoteDuration r1 newDuration in
+	    			Note(newRest), env
+	    			| (Literal(l1), Rest(r2)) -> let newDuration = (noteToDuration r2) * l1 in 
+	    			let newRest = setNoteDuration r2 newDuration in
+	    			Note(newRest), env
 	    			| (Array(a),Literal(l)) -> Array(goThroughArray IncDuration (Literal(l)) a), env
 	    			| (Literal(l),Array(a)) -> Array(goThroughArray IncDuration (Literal(l)) a), env
 	    			| _ -> raise (Failure ("Invalid Increase Duration Operation")))
@@ -242,6 +270,12 @@ let run (vars, funcs) =
 	    			| (Literal(l1), Note(n2)) -> let newDuration = (noteToDuration n2) / l1 in 
 	    			let newNote = setNoteDuration n2 newDuration in
 	    			Note(newNote), env
+	    			| (Rest(r1), Literal(l2)) -> let newDuration = (noteToDuration r1) / l2 in 
+	    			let newRest = setNoteDuration r1 newDuration in
+	    			Note(newRest), env
+	    			| (Literal(l1), Rest(r2)) -> let newDuration = (noteToDuration r2) / l1 in 
+	    			let newRest = setNoteDuration r2 newDuration in
+	    			Note(newRest), env
 	    			| (Array(a),Literal(l)) -> Array(goThroughArray DecDuration (Literal(l)) a), env
 	    			| (Literal(l),Array(a)) -> Array(goThroughArray DecDuration (Literal(l)) a), env
 	    			| _ -> raise (Failure ("Invalid Decrease Duration Operation")))
