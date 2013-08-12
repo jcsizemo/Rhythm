@@ -5,7 +5,7 @@ main()
   def d;
   c = F5.8;
   d = A7;
-  print(c .* 2);
-  print(d ./ 4);
+  print(c);
+  print(d);
 }
 

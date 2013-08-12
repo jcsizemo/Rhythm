@@ -9,6 +9,10 @@ end)
 
 exception ReturnException of expr * expr NameMap.t
 
+
+let trackCounters = ref NameMap.empty
+let currentTrack = ref ""
+
 (* Main entry point: run a program *)
 let run (vars, funcs) =
   (* Put function declarations in a symbol table *)
@@ -312,15 +316,30 @@ let run (vars, funcs) =
 
 
 	| Call("openFile", [e]) -> Literal(0), env
-	| Call("selectTrack", [e]) -> Literal(0), env
+	| Call("selectTrack", [e]) -> let oc = 	open_out_gen [Open_creat; Open_append; Open_text] 0o666 "output.txt" in
+								let v, env = eval env e in
+								let rec print = function
+	  							Literal(i) -> string_of_int i
+	  							| Id(i) -> i
+								| _ ->  raise (Failure ("Invalid track id"))
+								in
+								fprintf oc "\nTrack: %s\n" (print v);
+								close_out oc;
+								currentTrack := (print v);	
+								;Literal(0), env
 	| Call("writeToFile", [e]) -> let oc = 	open_out_gen [Open_creat; Open_append; Open_text] 0o666 "output.txt" in
 	let v, env = eval env e in
 	let rec print = function
-	  	Literal(i) -> string_of_int i
-	  	| Note(n) -> string_of_int (noteToInt n) ^ " " ^ string_of_int(noteToDuration n)
+	  	| Note(n) -> string_of_int (noteToInt n)
+	    | Rest(r) -> string_of_int (noteToInt r)
 		| _ ->  "Something else"
 	in
-	fprintf oc "%s\n" (print v);
+	let startingTrackCount = if NameMap.mem !currentTrack !trackCounters then NameMap.find !currentTrack !trackCounters else 0 in
+	let rec loop tickCount = 
+	fprintf oc "%s %s\n" (string_of_int (startingTrackCount + tickCount)) (print v);
+	if(tickCount < (noteToDuration (string_of_expr v))) then loop (tickCount + 1)
+	else trackCounters := NameMap.add !currentTrack (startingTrackCount + tickCount) !trackCounters
+in loop 1;
 	close_out oc;
 	Literal(0), env
 

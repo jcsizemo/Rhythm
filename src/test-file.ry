@@ -2,9 +2,11 @@ main()
 {
   def c;
   def d;
-
-  c = A5;
-  d = A#6;
+  c = F5.8;
+  d = A7;
+  print(c);
+  print(d);
+  selectTrack(1);
   writeToFile(c);
-  writeToFile(d);
 }
+
