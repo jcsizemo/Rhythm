@@ -480,7 +480,9 @@ let run (vars, funcs) =
   in let globals = List.fold_left
       (fun globals vdecl -> NameMap.add vdecl (Literal(0)) globals) NameMap.empty vars
   in 
-  		NameMap.iter (fun k v ->  
+  	let globals = if (NameMap.mem "init" func_decls) then call (NameMap.find "init" func_decls) [] globals 
+  					else List.fold_left (fun globals vdecl -> NameMap.add vdecl (Literal(0)) globals) NameMap.empty vars
+		in NameMap.iter (fun k v ->  
 								let sub = try 
 								  (String.sub k 0 6) 
 								with Invalid_argument x -> "notatrack" (* Ignoring *)
