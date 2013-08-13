@@ -374,12 +374,7 @@ let run (vars, funcs) =
 						else stop
 						in
 						write startTick (startTick + (16 / (noteToDuration n)))
-			| Rest(r) -> let rec write start stop =
-						if (start < stop) then (fprintf oc "%s %s\n" (string_of_int (startingTrackCount + start)) "REST";
-												write (start + 1) stop)
-						else stop
-						in
-						write startTick (startTick + (16 / (noteToDuration r)))
+			| Rest(r) -> (startTick + (16 / (noteToDuration r)))
 			| _ -> raise (Failure ("Illegal array value"))
 		in
 
