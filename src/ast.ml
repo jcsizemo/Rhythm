@@ -39,6 +39,7 @@ let rec string_of_expr = function
     Literal(l) -> string_of_int l
   | Id(i) -> i
   | Note(n) -> n
+  | Rest(r) -> r
   | Index(i,a) -> i
   | Binop(e1, o, e2) ->
       string_of_expr e1 ^ " " ^

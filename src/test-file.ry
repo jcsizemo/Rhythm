@@ -2,10 +2,8 @@ main()
 {
   def c;
   def d;
-  c = F5.8;
-  d = A7;
-  print(c);
-  print(d);
+  c = [[A0.1,A1.4,A2.8],A3,A4.16,[A5,A6],A7.1,[R.8,A9.16],A0];
+  d = R;
   selectTrack(1);
   writeToFile(c);
 }
