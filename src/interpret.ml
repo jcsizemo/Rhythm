@@ -13,6 +13,72 @@ exception ReturnException of expr * expr NameMap.t
 let trackCounters = ref NameMap.empty
 let currentTrack = ref ""
 
+let selectTrack v = let oc = 	open_out_gen [Open_creat; Open_append; Open_text] 0o666 "output.rym" in
+								fprintf oc "\nTrack: %s\n" v;
+								close_out oc;
+								currentTrack := v;	
+								;Literal(0), (NameMap.empty, NameMap.empty)
+
+let writeToFile v = let oc = open_out_gen [Open_creat; Open_append; Open_text] 0o666 "output.rym" in
+		let startingTrackCount = if NameMap.mem !currentTrack !trackCounters then NameMap.find !currentTrack !trackCounters else 0 in
+
+		let printPrim startTick = function
+			Note(n) -> let rec write start stop =
+						if (start < stop) then 
+								(fprintf oc "%s %s\n" (string_of_int (startingTrackCount + start)) (string_of_int (noteToInt (extractNoteWithoutDuration n)));
+								write (start + 1) stop)
+						else stop
+						in
+						write startTick (startTick + (16 / (noteToDuration n)))
+			| Rest(r) -> (startTick + (16 / (noteToDuration r)))
+			| _ -> raise (Failure ("Illegal array value"))
+		in
+
+		let rec printChord largest startTick = function
+				[] -> raise (Failure ("Cannot print empty array"))
+	  			| hd :: [] -> let length = (match hd with
+	  							Array(a) -> printChord largest startTick a
+	  							| Rest(r) -> printPrim startTick (Rest(r))
+	  							| Note(n) -> printPrim startTick (Note(n))
+	  							| _ -> raise (Failure ("Illegal array value"))) in if largest >= length then largest else length
+	  			| hd :: tl -> let length = (match hd with
+	  							Array(a) -> printChord largest startTick a
+	  							| Rest(r) -> printPrim startTick (Rest(r))
+	  							| Note(n) -> printPrim startTick (Note(n))
+	  							| _ -> raise (Failure ("Illegal array value"))) in if largest >= length then printChord largest startTick tl 
+	  																				else printChord length startTick tl
+	  	in
+
+		let rec printTrack startTick = function
+				[] -> raise (Failure ("Cannot print empty array"))
+	  			| hd :: [] -> (match hd with
+	  							Array(a) -> printChord 0 startTick a
+	  							| Rest(r) -> printPrim startTick (Rest(r))
+	  							| Note(n) -> printPrim startTick (Note(n))
+	  							| _ -> raise (Failure ("Illegal array value")))
+	  			| hd :: tl -> let newStartTick =
+	  							(match hd with
+	  							Array(a) -> printChord 0 startTick a
+	  							| Rest(r) -> printPrim startTick (Rest(r))
+	  							| Note(n) -> printPrim startTick (Note(n))
+	  							| _ -> raise (Failure ("Illegal array value")))
+	  							in printTrack newStartTick tl
+	  	in
+		let parse = function
+			Note(n) -> let numTicks = printPrim 1 (Note(n)) in trackCounters := NameMap.add !currentTrack (startingTrackCount + numTicks) !trackCounters
+			| Rest(r) -> let numTicks = printPrim 1 (Rest(r)) in trackCounters := NameMap.add !currentTrack (startingTrackCount + numTicks) !trackCounters
+			| Array(a) -> let numTicks = printTrack 1 a in trackCounters := NameMap.add !currentTrack (startingTrackCount + numTicks) !trackCounters
+			| _ -> raise (Failure ("Cannot print anything except arrays, notes, or rests"))
+		in
+		parse v;
+		print_endline "RYM file created successfully";
+		close_out oc;
+		Literal(0), (NameMap.empty, NameMap.empty)
+
+
+
+
+
 (* Main entry point: run a program *)
 let run (vars, funcs) =
   (* Put function declarations in a symbol table *)
@@ -348,78 +414,6 @@ let run (vars, funcs) =
 		print_endline (print v);
 	  Literal(0), env
 
-
-	| Call("openFile", [e]) -> Literal(0), env
-	| Call("selectTrack", [e]) -> let oc = 	open_out_gen [Open_creat; Open_trunc; Open_append; Open_text] 0o666 "output.rym" in
-								let v, env = eval env e in
-								let rec print = function
-	  								Literal(i) -> string_of_int i
-	  								| Id(i) -> i
-									| _ ->  raise (Failure ("Invalid track id"))
-								in
-								fprintf oc "\nTrack: %s\n" (print v);
-								close_out oc;
-								currentTrack := (print v);	
-								;Literal(0), env
-
-	| Call("writeToFile", [e]) -> let oc = open_out_gen [Open_creat; Open_trunc; Open_append; Open_text] 0o666 "output.rym" in
-		let v, env = eval env e in
-		let startingTrackCount = if NameMap.mem !currentTrack !trackCounters then NameMap.find !currentTrack !trackCounters else 0 in
-
-		let printPrim startTick = function
-			Note(n) -> let rec write start stop =
-						if (start < stop) then 
-								(fprintf oc "%s %s\n" (string_of_int (startingTrackCount + start)) (string_of_int (noteToInt (extractNoteWithoutDuration n)));
-								write (start + 1) stop)
-						else stop
-						in
-						write startTick (startTick + (16 / (noteToDuration n)))
-			| Rest(r) -> (startTick + (16 / (noteToDuration r)))
-			| _ -> raise (Failure ("Illegal array value"))
-		in
-
-		let rec printChord largest startTick = function
-				[] -> raise (Failure ("Cannot print empty array"))
-	  			| hd :: [] -> let length = (match hd with
-	  							Array(a) -> printChord largest startTick a
-	  							| Rest(r) -> printPrim startTick (Rest(r))
-	  							| Note(n) -> printPrim startTick (Note(n))
-	  							| _ -> raise (Failure ("Illegal array value"))) in if largest >= length then largest else length
-	  			| hd :: tl -> let length = (match hd with
-	  							Array(a) -> printChord largest startTick a
-	  							| Rest(r) -> printPrim startTick (Rest(r))
-	  							| Note(n) -> printPrim startTick (Note(n))
-	  							| _ -> raise (Failure ("Illegal array value"))) in if largest >= length then printChord largest startTick tl 
-	  																				else printChord length startTick tl
-	  	in
-
-		let rec printTrack startTick = function
-				[] -> raise (Failure ("Cannot print empty array"))
-	  			| hd :: [] -> (match hd with
-	  							Array(a) -> printChord 0 startTick a
-	  							| Rest(r) -> printPrim startTick (Rest(r))
-	  							| Note(n) -> printPrim startTick (Note(n))
-	  							| _ -> raise (Failure ("Illegal array value")))
-	  			| hd :: tl -> let newStartTick =
-	  							(match hd with
-	  							Array(a) -> printChord 0 startTick a
-	  							| Rest(r) -> printPrim startTick (Rest(r))
-	  							| Note(n) -> printPrim startTick (Note(n))
-	  							| _ -> raise (Failure ("Illegal array value")))
-	  							in printTrack newStartTick tl
-	  	in
-		let parse = function
-			Note(n) -> let numTicks = printPrim 1 (Note(n)) in trackCounters := NameMap.add !currentTrack (startingTrackCount + numTicks) !trackCounters
-			| Rest(r) -> let numTicks = printPrim 1 (Rest(r)) in trackCounters := NameMap.add !currentTrack (startingTrackCount + numTicks) !trackCounters
-			| Array(a) -> let numTicks = printTrack 1 a in trackCounters := NameMap.add !currentTrack (startingTrackCount + numTicks) !trackCounters
-			| _ -> raise (Failure ("Cannot print anything except arrays, notes, or rests"))
-		in
-		(fprintf oc "Track %s:\n" (if !currentTrack = "" then "1" else !currentTrack));
-		parse v;
-		print_endline "RYM file created successfully";
-		close_out oc;
-		Literal(0), env
-
     | Call(f, actuals) ->
 	  let fdecl =
 	    try NameMap.find f func_decls
@@ -485,7 +479,16 @@ let run (vars, funcs) =
   (* Run a program: initialize global variables to 0, find and run "main" *)
   in let globals = List.fold_left
       (fun globals vdecl -> NameMap.add vdecl (Literal(0)) globals) NameMap.empty vars
-  in try
-    call (NameMap.find "main" func_decls) [] globals
-  with Not_found -> raise (Failure ("did not find the main() function"))
-
+  in 
+  		NameMap.iter (fun k v ->  
+								let sub = try 
+								  (String.sub k 0 6) 
+								with Invalid_argument x -> "notatrack" (* Ignoring *)
+								in 
+								if (String.compare sub "track_") == 0 then
+								  let trackLabel = (String.sub k 6 ((String.length k) - 6)) in 
+								  try
+    								call (NameMap.find k func_decls) [] globals;
+	  								raise (Failure ("return call not made in track file (required)"))	
+  								  with ReturnException(v, globals) -> selectTrack(trackLabel); writeToFile(v); ()
+  								else () ) func_decls

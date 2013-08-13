@@ -1,10 +1,13 @@
-main()
+track_foo()
 {
   def c;
-  def d;
-  c = [[A0.1,A1.4,A2.8],A3,A4.16,[A5,A6],A7.1,[R.8,A9.16],A0];
-  d = R;
-  selectTrack(1);
-  writeToFile(c);
+  c = [[A0.16,A1.16,A2.16],A3,A4.16,R.8,A2];
+  return c;
 }
 
+track_foo2()
+{
+  def c;
+  c = [[A0.16,A1.16,A2.16],A3,A4.16,R.8,A4];
+  return c;
+}
