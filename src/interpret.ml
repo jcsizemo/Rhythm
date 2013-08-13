@@ -408,15 +408,15 @@ let run (vars, funcs) =
 	  							| _ -> raise (Failure ("Illegal array value")))
 	  							in printTrack newStartTick tl
 	  	in
-
 		let parse = function
 			Note(n) -> let numTicks = printPrim 1 (Note(n)) in trackCounters := NameMap.add !currentTrack (startingTrackCount + numTicks) !trackCounters
 			| Rest(r) -> let numTicks = printPrim 1 (Rest(r)) in trackCounters := NameMap.add !currentTrack (startingTrackCount + numTicks) !trackCounters
 			| Array(a) -> let numTicks = printTrack 1 a in trackCounters := NameMap.add !currentTrack (startingTrackCount + numTicks) !trackCounters
 			| _ -> raise (Failure ("Cannot print anything except arrays, notes, or rests"))
 		in
-		print_endline "RYM file created successfully";
+		(fprintf oc "Track %s:\n" !currentTrack);
 		parse v;
+		print_endline "RYM file created successfully";
 		close_out oc;
 		Literal(0), env
 
