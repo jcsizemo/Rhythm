@@ -19,12 +19,30 @@ public class rym2MIDI{
 
 	public static void main(String[] args)	throws InvalidMidiDataException, IOException {
 
+		int timingRes = 4, instrument = 1;
 		//***** Get Inputs *****
-		if (args.length != 2)
+		if((args.length<2)||(args.length>4)){
 			printUsageAndExit();
+		}
+		else if(args.length==2){
+			instrument = 1;
+			timingRes = 4;
+		}
+		else if(args.length==3){
+			String insStr = args[2];
+			instrument = Integer.parseInt(insStr.trim());
+			timingRes = 4;
+			
+		}else if(args.length==4){
+			String insStr  = args[2];
+			String timeStr = args[3];
+			instrument = Integer.parseInt(insStr.trim());
+			timingRes = Integer.parseInt(timeStr.trim());
+		}
+
 
 		//instrument and timingRes are default.
-		int timingRes=4, instrument = 1;
+		//int timingRes=96, instrument = 110;
 		int channel=0,note=0,tick=0,velocity=90,column=0;
 
 		int max_tick = 100000;
@@ -49,14 +67,15 @@ public class rym2MIDI{
 		int LineNum = 0;
 		int track_num = -1;
 		int total_track_num = 0;
-		int track_assigned = -2;
+		int track_assigned = -1;
 		int ArrTemp[][] = new int[max_tick][2];
 		//Read File Line By Line
 		while ((strLine = br.readLine()) != null)   {
 			// Print the content on the console
 			strLine = strLine.trim();
 			if (strLine.indexOf("Track")>=0) {
-				track_num = getTrackNum(strLine);
+				//track_num = getTrackNum(strLine);
+				track_num = track_num+1;
 				LineNum = 0;
 				ArrTemp = new int[max_tick][2];
 			}
@@ -247,7 +266,7 @@ public class rym2MIDI{
 
 	private static void printUsageAndExit(){
 		out("usage:");
-		out("java CSV2MIDI <infile.csv> <outfile.midi>");
+		out("java CSV2MIDI <infile.csv> <outfile.midi> <instrument> <timeresolution>");
 		System.exit(1);
 	}
 
@@ -256,15 +275,27 @@ public class rym2MIDI{
 	}
 
 	private static int getTrackNum(String track_label){
-		int startnum = track_label.indexOf("Track");
-		int endnum = track_label.indexOf(":");
-		String NumStr = track_label.substring(startnum+5,endnum);
+		String NumStr="";
+		if (track_label.indexOf("\t")>=0){
+			int startnum = track_label.indexOf("\t");
+			int endnum = track_label.indexOf(":");
+			NumStr = track_label.substring(startnum+1,endnum);
+		}
+		else{
+			int startnum = track_label.indexOf("Track");
+			int endnum = track_label.indexOf(":");
+			NumStr = track_label.substring(startnum+5,endnum);
+		}
 		int Num = Integer.parseInt(NumStr.trim());
 		return Num;
 	}
 
 	private static int[] getTickAndNote(String strline){
 		int blanknum = strline.indexOf(" ");
+		if(blanknum==-1){
+			blanknum = strline.indexOf("\t");
+		}
+		
 		int arr_two[] = new int[2];
 		String Tick = strline.substring(0,blanknum);
 		String Note = strline.substring(blanknum+1,strline.length());
