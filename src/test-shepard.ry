@@ -1,0 +1,15 @@
+main()
+{
+  c = C4.8;
+  a = 0;
+  song = [];
+  while (a < 13) {
+  	song = song :: c :: c++ :: R;
+  	c += 1;
+  	a += 1;
+  }
+  song = song :: song :: song;
+  print(song);
+  writeToFile(song);
+}
+

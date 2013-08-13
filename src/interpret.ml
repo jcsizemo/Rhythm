@@ -414,7 +414,7 @@ let run (vars, funcs) =
 			| Array(a) -> let numTicks = printTrack 1 a in trackCounters := NameMap.add !currentTrack (startingTrackCount + numTicks) !trackCounters
 			| _ -> raise (Failure ("Cannot print anything except arrays, notes, or rests"))
 		in
-		(fprintf oc "Track %s:\n" !currentTrack);
+		(fprintf oc "Track %s:\n" (if !currentTrack = "" then "1" else !currentTrack));
 		parse v;
 		print_endline "RYM file created successfully";
 		close_out oc;
