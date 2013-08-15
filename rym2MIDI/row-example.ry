@@ -1,0 +1,22 @@
+getBaseNotes() {
+    return [E5, A5, A5, B5.8, C5.8, 
+          C5.8, B5.8, C5.8, D5.8, E5.2, 
+          A6, E5, C5, A5, 
+          E5, D5, C5.8, B5.8, A5];
+}
+
+
+track_1() {
+	return getBaseNotes();
+}
+
+track_2() {
+	return [R.1, R.1] :: getBaseNotes();
+}
+
+track_3() {
+	return [R.1, R.1, R.1, R.1] :: getBaseNotes();
+}
+
+
+

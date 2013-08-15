@@ -65,9 +65,9 @@ let writeToFile v = let oc = open_out_gen [Open_creat; Open_append; Open_text] 0
 	  							in printTrack newStartTick tl
 	  	in
 		let parse = function
-			Note(n) -> let numTicks = printPrim 1 (Note(n)) in trackCounters := NameMap.add !currentTrack (startingTrackCount + numTicks) !trackCounters
-			| Rest(r) -> let numTicks = printPrim 1 (Rest(r)) in trackCounters := NameMap.add !currentTrack (startingTrackCount + numTicks) !trackCounters
-			| Array(a) -> let numTicks = printTrack 1 a in trackCounters := NameMap.add !currentTrack (startingTrackCount + numTicks) !trackCounters
+			Note(n) -> let numTicks = printPrim 0 (Note(n)) in trackCounters := NameMap.add !currentTrack (startingTrackCount + numTicks) !trackCounters
+			| Rest(r) -> let numTicks = printPrim 0 (Rest(r)) in trackCounters := NameMap.add !currentTrack (startingTrackCount + numTicks) !trackCounters
+			| Array(a) -> let numTicks = printTrack 0 a in trackCounters := NameMap.add !currentTrack (startingTrackCount + numTicks) !trackCounters
 			| _ -> raise (Failure ("Cannot print anything except arrays, notes, or rests"))
 		in
 		parse v;
