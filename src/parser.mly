@@ -2,7 +2,7 @@
 
 %token SEMI LPAREN RPAREN LBRACE RBRACE COMMA LBRACKET RBRACKET 
 %token COLON
-%token PLUS MINUS ASSIGN CONCAT
+%token PLUS MINUS ASSIGN CONCAT STRETCH
 %token EQ NEQ OCTDOWN OCTUP HALFUP HALFDOWN
 %token LT LEQ GT GEQ
 
@@ -26,7 +26,7 @@
 %left EQ NEQ
 %left LT GT LEQ GEQ
 %left CONCAT
-%left PLUS MINUS OCTUP OCTDOWN HALFUP HALFDOWN INCREASE_DURATION DECREASE_DURATION
+%left PLUS MINUS OCTUP OCTDOWN HALFUP HALFDOWN INCREASE_DURATION DECREASE_DURATION STRETCH
 
 %start program
 %type <Ast.program> program
@@ -100,6 +100,7 @@ expr:
   | expr ASSIGN_OCTUP expr { Assign($1, Binop($1,Octup,$3) )}
   | expr ASSIGN_OCTDOWN expr { Assign($1, Binop($1,Octdown,$3) )}
   | expr ASSIGN_CONCAT expr { Assign($1, Binop($1,Concat,$3) )}
+  | expr STRETCH expr       { Binop($1, Stretch, $3) }
   | ID LPAREN actuals_opt RPAREN { Call($1, $3) }
   | LPAREN expr RPAREN { $2 }
   | LBRACKET actuals_opt RBRACKET { Array($2) }

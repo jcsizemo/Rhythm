@@ -34,6 +34,7 @@ rule token = parse
 | "!:="			{ ASSIGN_REMOVE }
 | "*"			{ INCREASE_DURATION }
 | "/"			{ DECREASE_DURATION }
+| "->"			{ STRETCH }
 | "if"     		{ IF }
 | "else"   		{ ELSE }
 | "while"  		{ WHILE }

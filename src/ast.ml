@@ -1,4 +1,4 @@
-type op = Plus | Minus | Longer | Shorter | Equal | Neq | Concat | Octup | Less | Leq | Greater | Geq | Octdown | Halfup | Halfdown | IncDuration | DecDuration
+type op = Plus | Minus | Longer | Shorter | Equal | Neq | Concat | Octup | Less | Leq | Greater | Geq | Octdown | Halfup | Halfdown | IncDuration | DecDuration | Stretch
 
 type expr =
     Literal of int
@@ -49,7 +49,7 @@ let rec string_of_expr = function
       | Less -> "<" | Leq -> "<=" | Greater -> ">" | Geq -> ">="
       | Concat -> "::" | Halfup -> "++" | Halfdown -> "--"
       | Octup -> ">>" | Octdown -> "<<" | IncDuration -> ".*"
-      | DecDuration -> "./") ^ " " ^
+      | Stretch -> "->" | DecDuration -> "./") ^ " " ^
       string_of_expr e2
   | Assign(v, e) -> string_of_expr v ^ " = " ^ string_of_expr e
   | Call(f, el) ->

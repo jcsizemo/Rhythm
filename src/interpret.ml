@@ -345,6 +345,12 @@ let run (vars, funcs) =
 	    			| (Array(a),Literal(l)) -> Array(goThroughArray DecDuration (Literal(l)) a), env
 	    			| (Literal(l),Array(a)) -> Array(goThroughArray DecDuration (Literal(l)) a), env
 	    			| _ -> raise (Failure ("Invalid Decrease Duration Operation")))
+	    	|Stretch ->
+	    		(match v2 with
+	    			Literal(l) -> let rec stretch l a =
+	    							if (l > 0) then stretch (l-1) (v1 :: a) else a in
+	    							Array(stretch l []), env
+	    			| _ -> raise (Failure ("RHS of stretch statement must be an integer")))
 	    | _ ->raise (Failure ("Invalid operation")))
 
       | Id(var) ->
@@ -490,7 +496,7 @@ let run (vars, funcs) =
 								if (String.compare sub "track_") == 0 then
 								  let trackLabel = (String.sub k 6 ((String.length k) - 6)) in 
 								  try
-    								call (NameMap.find k func_decls) [] globals;
+    								ignore (call (NameMap.find k func_decls) [] globals);
 	  								raise (Failure ("return call not made in track file (required)"))	
-  								  with ReturnException(v, globals) -> selectTrack(trackLabel); writeToFile(v); ()
+  								  with ReturnException(v, globals) -> ignore (selectTrack(trackLabel)); ignore (writeToFile(v)); ()
   								else () ) func_decls
