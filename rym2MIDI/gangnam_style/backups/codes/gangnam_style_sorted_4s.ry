@@ -1,0 +1,24 @@
+track_1()
+{
+    def arr1;
+    arr1 = [G#4.1,G#4.1,G#4.1,G4.1,G4.1,G4.1,F#4.1,F#4.1,F#4.1,B4.1,B4.1,B4.1];
+    return arr1;
+}
+
+track_2()
+{
+    def arr2;
+    arr2 = [G#2.1,G#2.1,G#2.1,R.1,R.1,R.1,G#2.1,G#2.1,G#2.1,R.1,R.1,R.1];
+    return arr2;
+}
+
+track_3()
+{
+    def arr3;
+track_4()
+{
+    def arr4;
+    arr4 = [A3.1,A3.2,R.1,R.1,R.1,R.1,R.2,A3.1,A3.2,R.1,R.1,R.1,R.1,R.2];
+    return arr4;
+}
+
