@@ -26,7 +26,8 @@
 %left EQ NEQ
 %left LT GT LEQ GEQ
 %left CONCAT
-%left PLUS MINUS OCTUP OCTDOWN HALFUP HALFDOWN INCREASE_DURATION DECREASE_DURATION STRETCH
+%left PLUS MINUS OCTUP OCTDOWN INCREASE_DURATION DECREASE_DURATION STRETCH
+%right HALFUP HALFDOWN
 
 %start program
 %type <Ast.program> program
@@ -89,8 +90,8 @@ expr:
   | expr GEQ     expr { Binop($1, Geq, $3) }
   | expr CONCAT expr { Binop($1, Concat, $3) }
   | expr ASSIGN expr   { Assign($1, $3) }
-  | expr HALFUP { Binop($1, Plus, Literal(1))}
-  | expr HALFDOWN { Binop($1, Minus, Literal(1))}
+  | expr HALFUP { Assign($1, Binop($1, Plus, Literal(1)))}
+  | expr HALFDOWN { Assign($1, Binop($1, Minus, Literal(1)))}
   | expr OCTUP expr   {Binop($1,Octup,$3)}
   | expr OCTDOWN expr   { Binop($1, Octdown, $3)}
   | expr INCREASE_DURATION expr { Binop($1, IncDuration, $3)}
