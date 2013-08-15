@@ -40,13 +40,8 @@ rule token = parse
 | "while"  		{ WHILE }
 | "return" 		{ RETURN }
 | "loop"   		{ LOOP }
-| "openFile" 	{ OPENFILE }
-| "closeFile" 	{ CLOSEFILE }
 | "true"   		{ TRUE }
 | "false"		{ FALSE }
-| "tempo"		{ TEMPO }
-| "startTrack"	{ STARTTRACK }
-| "stopTrack"	{ STOPTRACK }
 | "def"    { DEF }
 | ['-']?['0'-'9']+ as lxm { LITERAL(int_of_string lxm) }
 | ['A' - 'G']['b' '#']?['0'-'9'] as lxm { NOTE(lxm) }
