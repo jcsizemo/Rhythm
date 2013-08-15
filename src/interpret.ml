@@ -346,10 +346,13 @@ let run (vars, funcs) =
 	    			| (Literal(l),Array(a)) -> Array(goThroughArray DecDuration (Literal(l)) a), env
 	    			| _ -> raise (Failure ("Invalid Decrease Duration Operation")))
 	    	|Stretch ->
-	    		(match v2 with
-	    			Literal(l) -> let rec stretch l a =
-	    							if (l > 0) then stretch (l-1) (v1 :: a) else a in
-	    							Array(stretch l []), env
+	    		(match (v1,v2) with
+	    			(Array(arr),Literal(l)) -> let rec stretch l a =
+	    								if (l > 0) then stretch (l-1) (arr @ a) else a in
+	    								Array(stretch l []), env
+	    			| (_,Literal(l)) -> let rec stretch l a =
+	    								if (l > 0) then stretch (l-1) (v1 :: a) else a in
+	    								Array(stretch l []), env
 	    			| _ -> raise (Failure ("RHS of stretch statement must be an integer")))
 	    | _ ->raise (Failure ("Invalid operation")))
 

@@ -19,7 +19,7 @@ track_1() {
     r += 1;
     a += 1;
   }
-  song = song :: song :: song;
+  song = song->3;
   return song;
   }
 
