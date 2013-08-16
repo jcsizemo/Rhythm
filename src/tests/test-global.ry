@@ -1,0 +1,10 @@
+def c;
+
+init() {
+	c = [A4,B4,C4];
+	testGlobal();
+}
+
+testGlobal() {
+	print(c);
+}

@@ -1,0 +1,23 @@
+
+getNotes() {
+	return [A4,B4,C4];
+}
+
+plusOne(e1) {
+	return e1 + 1;
+}
+
+add(e1,e2) {
+	return e1 + e2;
+}
+
+
+
+init() {
+	a = getNotes();
+	b = plusOne(a);
+	c = add(a,b);
+	print(a);
+	print(b);
+	print(c);
+}

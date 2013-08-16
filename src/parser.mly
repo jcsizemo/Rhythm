@@ -9,6 +9,7 @@
 %token INCREASE_DURATION DECREASE_DURATION
 %token ASSIGN_PLUS ASSIGN_MINUS ASSIGN_REMOVE
 %token ASSIGN_OCTUP ASSIGN_OCTDOWN
+%token ASSIGN_INC ASSIGN_DEC
 %token ASSIGN_CONCAT
 %token RETURN IF ELSE WHILE LOOP
 %token CLOSEFILE OPENFILE TRUE FALSE TEMPO
@@ -22,7 +23,7 @@
 
 %nonassoc NOELSE
 %nonassoc ELSE
-%right ASSIGN ASSIGN_PLUS ASSIGN_MINUS ASSIGN_OCTUP ASSIGN_OCTDOWN ASSIGN_CONCAT
+%right ASSIGN ASSIGN_PLUS ASSIGN_MINUS ASSIGN_OCTUP ASSIGN_OCTDOWN ASSIGN_CONCAT ASSIGN_INC ASSIGN_DEC
 %left EQ NEQ
 %left LT GT LEQ GEQ
 %left CONCAT
@@ -101,6 +102,8 @@ expr:
   | expr ASSIGN_OCTUP expr { Assign($1, Binop($1,Octup,$3) )}
   | expr ASSIGN_OCTDOWN expr { Assign($1, Binop($1,Octdown,$3) )}
   | expr ASSIGN_CONCAT expr { Assign($1, Binop($1,Concat,$3) )}
+  | expr ASSIGN_INC expr { Assign($1, Binop($1,IncDuration,$3) )}
+  | expr ASSIGN_DEC expr { Assign($1, Binop($1,DecDuration,$3) )}
   | expr STRETCH expr       { Binop($1, Stretch, $3) }
   | ID LPAREN actuals_opt RPAREN { Call($1, $3) }
   | LPAREN expr RPAREN { $2 }

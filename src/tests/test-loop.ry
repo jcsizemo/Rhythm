@@ -1,0 +1,13 @@
+init() {
+
+	allNotes = [];
+	start = A4;
+
+	loop(0:12) {
+		allNotes ::= start;
+		start++;
+	}
+
+	print(allNotes);
+
+}

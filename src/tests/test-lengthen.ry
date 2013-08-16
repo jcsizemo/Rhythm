@@ -1,0 +1,8 @@
+init() {
+	print(A4 * 2);
+	print(A4.16 * 2);
+	print(A4.2 * 2);
+	print(A4.16 * 16);
+	print([A4,B4,C4] * 2);
+	print([Ab4.8,B4.8,C#4.8] * 2);
+}

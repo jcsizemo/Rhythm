@@ -1,0 +1,6 @@
+init() {
+	
+	print(R);
+	print(R.8);
+
+}

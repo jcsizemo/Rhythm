@@ -1,0 +1,11 @@
+init() {
+
+	print(A4 == A4);
+	print(1 == 1);
+	print(A4 == B4);
+	print(1 == 2);
+	print([A4,B4] == [A4,B4]);
+	print([A4,B4,[C4,D4,E4]] == [A4,B4,[C4,D4,E4]]);
+	print([A4,B4,[C4,D4,E4]] == [A4,B4,[C4,D4,F4]]);
+
+}

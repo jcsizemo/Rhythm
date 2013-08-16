@@ -1,0 +1,8 @@
+init() {
+	
+	print(G4);
+	print(G#4);
+	print(Gb4);
+	print(Gb4.4);
+
+}

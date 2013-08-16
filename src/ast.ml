@@ -10,7 +10,6 @@ type expr =
   | Assign of expr * expr
   | Call of string * expr list
   | Index of string * int list
-  | Noexpr
 
 type stmt =
     Block of stmt list
@@ -54,7 +53,6 @@ let rec string_of_expr = function
   | Assign(v, e) -> string_of_expr v ^ " = " ^ string_of_expr e
   | Call(f, el) ->
       f ^ "(" ^ String.concat ", " (List.map string_of_expr el) ^ ")"
-  | Noexpr -> ""
   | Array(a) -> "[" ^ build a ^ "]" and build = function
                   hd :: [] -> (string_of_expr hd)
                   | hd :: tl -> ((string_of_expr hd) ^ "," ^ (build tl))

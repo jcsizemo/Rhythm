@@ -1,6 +1,6 @@
 #!/bin/sh
 
-MICROC="./microc"
+RHYTHM="./rhythm"
 
 # Set time limit for all operations
 ulimit -t 30
@@ -13,7 +13,7 @@ globalerror=0
 keep=0
 
 Usage() {
-    echo "Usage: testall.sh [options] [.mc files]"
+    echo "Usage: testall.sh [options] [.ry files]"
     echo "-k    Keep intermediate files"
     echo "-h    Print this help"
     exit 1
@@ -51,8 +51,8 @@ Run() {
 Check() {
     error=0
     basename=`echo $1 | sed 's/.*\\///
-                             s/.mc//'`
-    reffile=`echo $1 | sed 's/.mc$//'`
+                             s/.ry//'`
+    reffile=`echo $1 | sed 's/.ry$//'`
     basedir="`echo $1 | sed 's/\/[^\/]*$//'`/."
 
     echo -n "$basename..."
@@ -62,12 +62,8 @@ Check() {
 
     generatedfiles=""
 
-    generatedfiles="$generatedfiles ${basename}.i.out" &&
-    Run "$MICROC" "-i" "<" $1 ">" ${basename}.i.out &&
-    Compare ${basename}.i.out ${reffile}.out ${basename}.i.diff
-
     generatedfiles="$generatedfiles ${basename}.c.out" &&
-    Run "$MICROC" "-c" "<" $1 ">" ${basename}.c.out &&
+    Run "$RHYTHM" "<" $1 ">" ${basename}.c.out &&
     Compare ${basename}.c.out ${reffile}.out ${basename}.c.diff
 
     # Report the status and clean up the generated files
@@ -101,7 +97,7 @@ if [ $# -ge 1 ]
 then
     files=$@
 else
-    files="tests/fail-*.mc tests/test-*.mc"
+    files="tests/fail-*.ry tests/test-*.ry"
 fi
 
 for file in $files

@@ -1,0 +1,17 @@
+def c;
+
+foo(c) {
+	c--;
+	print(c);
+	bar();
+}
+
+bar() {
+	print(c);
+}
+
+
+init() {
+	c = C4.4;
+	foo(c);
+}

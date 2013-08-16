@@ -31,9 +31,10 @@ rule token = parse
 | ">>="			{ ASSIGN_OCTUP }
 | "<<="			{ ASSIGN_OCTDOWN }
 | "::="			{ ASSIGN_CONCAT }
-| "!:="			{ ASSIGN_REMOVE }
-| "/"			{ INCREASE_DURATION }
-| "*"			{ DECREASE_DURATION }
+| "*="			{ ASSIGN_INC }
+| "/="			{ ASSIGN_DEC }
+| "*"			{ INCREASE_DURATION }
+| "/"			{ DECREASE_DURATION }
 | "->"			{ STRETCH }
 | "if"     		{ IF }
 | "else"   		{ ELSE }

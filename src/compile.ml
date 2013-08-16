@@ -99,7 +99,6 @@ let run (vars, funcs) =
 	  | Note(n) -> Note(n), env
 	  | Rest(n) -> Rest(n), env
 	  | Array(n) -> Array(n), env
-	  | Noexpr -> raise (Failure ("Illegal expression"))
 	  | Index(a,i) -> let v, (locals, globals) = eval env (Id(a)) in
 	  	let rec lookup arr indices = 
 	  		let arr = match arr with
@@ -124,31 +123,39 @@ let run (vars, funcs) =
 	    								[] -> raise (Failure ("Cannot perform operation on an empty array"))
 	    								| hd :: [] -> (match hd with
 	    									Array(a2) -> [Array((goThroughArray op (Note(n)) a2))]
+	    									| Binop(e1, o, e2) -> let v, vars = eval env (Binop(e1, o, e2)) in goThroughArray op (Note(n)) [v]
+	    									| Index(a,i) -> let v, vars = eval env (Index(a,i)) in goThroughArray op (Note(n)) [v]
 	    									| Note(n2) -> [Array([Note(n2);Note(n)])]
 	    									| Rest(r) -> raise (Failure ("Cannot make chords with rests"))
-	    									| _ -> raise (Failure ("Illegal array value")))
+	    									| _  as extra -> raise (Failure ("Illegal array value: " ^ (string_of_expr extra))))
 	    								| hd :: tl -> (match hd with
 	    									Array(a2) -> [Array((goThroughArray op (Note(n)) a2))] @ (goThroughArray op (Note(n)) tl)
+	    									| Binop(e1, o, e2) -> let v, vars = eval env (Binop(e1, o, e2)) in goThroughArray op (Note(n)) [v] @ (goThroughArray op (Note(n)) tl)
+	    									| Index(a,i) -> let v, vars = eval env (Index(a,i)) in (goThroughArray op (Note(n)) [v]) @ (goThroughArray op (Note(n)) tl)
 	    									| Note(n2) -> [Array([Note(n2);Note(n)])] @ (goThroughArray op (Note(n)) tl)
 	    									| Rest(r) -> raise (Failure ("Cannot make chords with rests"))
-	    									| _ -> raise (Failure ("Illegal array value"))))
+	    									| _  as extra -> raise (Failure ("Illegal array value: " ^ (string_of_expr extra)))))
 	    				| Literal(lit) -> (match l with 
 	    								[] -> raise (Failure ("Cannot perform operation on an empty array"))
 	    								| hd :: [] -> (match hd with
 	    									Array(a2) -> [Array((goThroughArray op (Literal(lit)) a2))]
+	    									| Binop(e1, o, e2) -> let v, vars = eval env (Binop(e1, o, e2)) in goThroughArray op (Literal(lit)) [v]
+	    									| Index(a,i) -> let v, vars = eval env (Index(a,i)) in goThroughArray op (Literal(lit)) [v]
 	    									| Rest(r) -> raise (Failure ("Cannot change the pitch of a rest"))
 	    									| Note(n2) -> 	let dur = noteToDuration n2 in
 	    													let oldNote = extractNoteWithoutDuration n2 in
 	    													[Note((setNoteDuration (intToNote ((noteToInt oldNote) + lit))) dur)]
-	    									| _ -> raise (Failure ("Illegal array value")))
+	    									| _  as extra -> raise (Failure ("Illegal array value: " ^ (string_of_expr extra))))
 	    								| hd :: tl -> (match hd with
 	    									Array(a2) -> [Array((goThroughArray op (Literal(lit)) a2))] @ (goThroughArray op (Literal(lit)) tl)
+	    									| Binop(e1, o, e2) -> let v, vars = eval env (Binop(e1, o, e2)) in goThroughArray op (Literal(lit)) [v] @ (goThroughArray op (Literal(lit)) tl)
+	    									| Index(a,i) -> let v, vars = eval env (Index(a,i)) in (goThroughArray op (Literal(lit)) [v]) @ (goThroughArray op (Literal(lit)) tl)
 	    									| Rest(r) -> raise (Failure ("Cannot change the pitch of a rest"))
 	    									| Note(n2) -> 	let dur = noteToDuration n2 in
 	    													let oldNote = extractNoteWithoutDuration n2 in
 	    													[Note((setNoteDuration (intToNote ((noteToInt oldNote) + lit))) dur)] 
 	    														@ (goThroughArray op (Literal(lit)) tl)
-	    									| _ -> raise (Failure ("Illegal array value"))))
+	    									| _  as extra -> raise (Failure ("Illegal array value: " ^ (string_of_expr extra)))))
 	    				| _ -> raise (Failure ("Unuseable value")))
 	    			| Minus -> (match e with
 	    				Literal(lit) -> (match l with
@@ -229,8 +236,8 @@ let run (vars, funcs) =
 	    			| (Note(n),Array(a)) -> Array(goThroughArray Plus (Note(n)) a), env
 	    			| (Array(a),Literal(l)) -> Array(goThroughArray Plus (Literal(l)) a), env
 	    			| (Literal(l),Array(a)) -> Array(goThroughArray Plus (Literal(l)) a), env
-	    			| (Rest(r),Literal(l)) -> raise (Failure ("Cannot change the pitch of a rest"))
-	    			| (Literal(l),Rest(r)) -> raise (Failure ("Cannot change the pitch of a rest"))
+	    			| (Rest(r),Literal(l)) -> Rest(r), env
+	    			| (Literal(l),Rest(r)) -> Rest(r), env
 	    			| (Array(a1),Array(a2)) ->  let split big small =
 	    											let arrBig = Array.of_list big
 	    										in
@@ -266,12 +273,14 @@ let run (vars, funcs) =
 	     		    (Literal(l1), Literal(l2)) -> Literal(boolean (v1 = v2)), env
 	     		    | (Note(n1), Note(n2)) -> Literal(boolean (n1 = n2)), env
 	     		    | (Rest(r1), Note(r2)) -> Literal(boolean (r1 = r2)), env
+	     		    | (Array(a1), Array(a2)) -> Literal(boolean (a1 = a2)), env
 	     			| _ -> raise (Failure ("Invalid IsEqual Operation")))	
 	     	|Neq ->
 	     		(match (v1,v2) with
-	     			(Literal(l1), Literal(l2)) -> Literal(boolean (v1 != v2)), env
-	     			| (Note(n1), Note(n2)) -> Literal(boolean (n1 != n2)), env
-	     			| (Rest(r1), Note(r2)) -> Literal(boolean (r1 != r2)), env
+	     			(Literal(l1), Literal(l2)) -> Literal(boolean (v1 <> v2)), env
+	     			| (Note(n1), Note(n2)) -> Literal(boolean (n1 <> n2)), env
+	     			| (Rest(r1), Note(r2)) -> Literal(boolean (r1 <> r2)), env
+	     			| (Array(a1), Array(a2)) -> Literal(boolean (a1 <> a2)), env
 	     			| _ -> raise (Failure ("Invalid NotEqual Operation")))	
 	     	|Less -> 
 	     		(match (v1,v2) with
@@ -311,12 +320,16 @@ let run (vars, funcs) =
 	    		(match v2 with
 	    			Literal(l) -> eval env (Binop(v1, Minus, Literal(12*l)))
 	    			| _ -> raise (Failure ("LHS of octave shift must be a note or array, RHS must be an integer")))
-	    	|IncDuration ->
+	    	|DecDuration ->
 	    		(match (v1,v2) with
-	    			(Note(n1), Literal(l2)) -> let newDuration = (noteToDuration n1) * l2 in 
+	    			(Note(n1), Literal(l2)) -> let dur = (noteToDuration n1) in
+	    			if dur = 16 then raise (Failure ("Sixteenth notes cannot be shortened"))
+	    			else let newDuration = dur * l2 in 
 	    			let newNote = setNoteDuration n1 newDuration in
 	    			Note(newNote), env
-	    			| (Literal(l1), Note(n2)) -> let newDuration = (noteToDuration n2) * l1 in 
+	    			| (Literal(l1), Note(n2)) -> let dur = (noteToDuration n2) in
+	    			if dur = 16 then raise (Failure ("Sixteenth notes cannot be shortened"))
+	    			else let newDuration = dur * l1 in 
 	    			let newNote = setNoteDuration n2 newDuration in
 	    			Note(newNote), env
 	    			| (Rest(r1), Literal(l2)) -> let newDuration = (noteToDuration r1) * l2 in 
@@ -328,12 +341,16 @@ let run (vars, funcs) =
 	    			| (Array(a),Literal(l)) -> Array(goThroughArray IncDuration (Literal(l)) a), env
 	    			| (Literal(l),Array(a)) -> Array(goThroughArray IncDuration (Literal(l)) a), env
 	    			| _ -> raise (Failure ("Invalid Increase Duration Operation")))
-	    	|DecDuration -> 
+	    	|IncDuration -> 
 	    		(match (v1,v2) with
-	    			(Note(n1), Literal(l2)) -> let newDuration = (noteToDuration n1) / l2 in 
+	    			(Note(n1), Literal(l2)) -> let dur = (noteToDuration n1) in
+	    			if dur = 1 then raise (Failure ("Whole notes cannot be lengthened"))
+	    			else let newDuration = dur / l2 in 
 	    			let newNote = setNoteDuration n1 newDuration in
 	    			Note(newNote), env
-	    			| (Literal(l1), Note(n2)) -> let newDuration = (noteToDuration n2) / l1 in 
+	    			| (Literal(l1), Note(n2)) -> let dur = (noteToDuration n2) in
+	    			if dur = 1 then raise (Failure ("Whole notes cannot be lengthened"))
+	    			else let newDuration = dur / l1 in 
 	    			let newNote = setNoteDuration n2 newDuration in
 	    			Note(newNote), env
 	    			| (Rest(r1), Literal(l2)) -> let newDuration = (noteToDuration r1) / l2 in 
@@ -410,11 +427,10 @@ let run (vars, funcs) =
 	  	| Note(n) -> n
 	  	| Rest(r) -> r
 	  	| Id(i) -> let expr, vars = eval env (Id(i)) in print expr
-	  	| Index(i,a) -> "INDEX"
-	  	| Binop(x,y,z) -> "BINOP"
-	  	| Call(x,y) -> "CALL"
-	  	| Noexpr -> "NOEXPR"
-	  	| Assign(x,y) -> "ASSIGN"
+	  	| Index(i,a) -> let expr, vars = eval env (Index(i,a)) in print expr
+	  	| Binop(x,y,z) -> let expr, vars = eval env (Binop(x,y,z)) in print expr
+	  	| Call(x,y) -> let expr, vars = eval env (Call(x,y)) in print expr
+	  	| Assign(x,y) -> let expr, vars = eval env (Assign(x,y)) in print expr
 	  	| Array(a) -> "[" ^ build a ^ "]" and build = function
 	  							hd :: [] -> (print hd)
 	  							| hd :: tl ->  ((print hd) ^ "," ^ (build tl))
@@ -448,23 +464,25 @@ let run (vars, funcs) =
 	  let v, env = eval env e in
 	  (match v with
 	  		Literal(l) ->  exec env (if l != 0 then s1 else s2)
-	  		| _ -> raise (Failure ("Error: If only support arithmatic")))
+	  		| _ -> raise (Failure ("Error: If only support arithmetic")))
       | While(e, s) ->
 	  let rec loop env =
 	    let v, env = eval env e in
 	    (match v with
 	    	Literal(l) -> if (l != 0) then loop (exec env s) else env
-	    	| _ -> raise (Failure ("Error: While only support arithmatic")))
+	    	| _ -> raise (Failure ("Error: While only support arithmetic")))
 	  in loop env 
 	  | Loop(e1, e2, s) ->
-	    let _, env = eval env e1 in
-            let rec loop env =
-	    let v, env = eval env e2 in
-	    (match v with
-	    	Literal(l) -> if (l != 0) then loop (exec env s) else env
-	     	| _ -> raise (Failure ("Error: Loop only support arithmatic")))
-	    
-	  in loop env	  
+	    let v1, env = eval env e1 in
+	    let v2, env = eval env e2 in
+	    (match (v1,v2) with
+			(Literal(l1),Literal(l2)) -> 
+				let rec loop l1 l2 env = 
+					if (l1 < l2) then loop (l1+1) l2 (exec env s)
+					else env
+				in
+				loop l1 l2 env
+	    	| _ -> raise (Failure ("Both loop parameters must be integers")))
 	  | Return(e) ->
 	  let v, (locals, globals) = eval env e in
 	  raise (ReturnException(v, globals)) 

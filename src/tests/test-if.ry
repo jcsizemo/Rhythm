@@ -1,0 +1,37 @@
+init() {
+
+	if (A4 == A4) {
+		print(1);
+	}
+	else {
+		print(2);
+	}
+
+	if (A4 != A4) {
+		print(3);
+	}
+	else {
+		print(4);
+	}
+
+	if (A4 == A4) {
+		print(5);
+	}
+
+	if (A4 == A4) {
+		if (A4 == A4) {
+			print(6);
+		}
+	}
+
+	if (A4 == A4) {
+		if (A4 != A4) {
+			print(7);
+		}
+		else {
+			print(8);
+		}
+	}
+	
+
+}

@@ -1,0 +1,24 @@
+init() {
+	print(1 + 2 - 3);
+	a = [A4,B4,C4];
+	b = A4 - (1 + 2) * 4 / 2 :: [[a[1]+1,B4]] -> 3 >> 3 << 1;
+	print(b);
+	b++;
+	print(b);
+	b--;
+	print(b);
+	b >>= 2;
+	print(b);
+	b <<= 3;
+	print(b);
+	b += 1;
+	print(b);
+	b -= 2;
+	print(b);
+	b ::= G#7;
+	print(b);
+	b *= 2;
+	print(b);
+	b /= 4;
+	print(b);
+}
