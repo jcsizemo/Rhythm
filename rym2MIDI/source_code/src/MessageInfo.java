@@ -4,7 +4,7 @@
 /*                                                                         */
 /* This sample program is owned by International Business Machines         */
 /* Corporation or one of its subsidiaries ("IBM") and is copyrighted       */
-/* and licensed, not sold.                                                 */
+/* and licensed, not sold.                                                  */
 /*                                                                         */
 /* You may copy, modify, and distribute this sample program in any         */
 /* form without payment to IBM, for any purpose including developing,      */
