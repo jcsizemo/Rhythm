@@ -141,7 +141,7 @@ let run (vars, funcs) =
 	    									Array(a2) -> [Array((goThroughArray op (Literal(lit)) a2))]
 	    									| Binop(e1, o, e2) -> let v, vars = eval env (Binop(e1, o, e2)) in goThroughArray op (Literal(lit)) [v]
 	    									| Index(a,i) -> let v, vars = eval env (Index(a,i)) in goThroughArray op (Literal(lit)) [v]
-	    									| Rest(r) -> raise (Failure ("Cannot change the pitch of a rest"))
+	    									| Rest(r) -> [Rest(r)]
 	    									| Note(n2) -> 	let dur = noteToDuration n2 in
 	    													let oldNote = extractNoteWithoutDuration n2 in
 	    													[Note((setNoteDuration (intToNote ((noteToInt oldNote) + lit))) dur)]
@@ -150,7 +150,7 @@ let run (vars, funcs) =
 	    									Array(a2) -> [Array((goThroughArray op (Literal(lit)) a2))] @ (goThroughArray op (Literal(lit)) tl)
 	    									| Binop(e1, o, e2) -> let v, vars = eval env (Binop(e1, o, e2)) in goThroughArray op (Literal(lit)) [v] @ (goThroughArray op (Literal(lit)) tl)
 	    									| Index(a,i) -> let v, vars = eval env (Index(a,i)) in (goThroughArray op (Literal(lit)) [v]) @ (goThroughArray op (Literal(lit)) tl)
-	    									| Rest(r) -> raise (Failure ("Cannot change the pitch of a rest"))
+	    									| Rest(r) -> [Rest(r)]
 	    									| Note(n2) -> 	let dur = noteToDuration n2 in
 	    													let oldNote = extractNoteWithoutDuration n2 in
 	    													[Note((setNoteDuration (intToNote ((noteToInt oldNote) + lit))) dur)] 
@@ -162,14 +162,18 @@ let run (vars, funcs) =
 	    								[] -> raise (Failure ("Cannot perform operation on an empty array")) 
 	    								| hd :: [] -> (match hd with
 	    									Array(a2) -> [Array((goThroughArray op (Literal(lit)) a2))]
-	    									| Rest(r) -> raise (Failure ("Cannot change the pitch of a rest"))
+	    									| Rest(r) -> [Rest(r)]
+	    									| Binop(e1, o, e2) -> let v, vars = eval env (Binop(e1, o, e2)) in goThroughArray op (Literal(lit)) [v]
+	    									| Index(a,i) -> let v, vars = eval env (Index(a,i)) in goThroughArray op (Literal(lit)) [v]
 	    									| Note(n2) -> 	let dur = noteToDuration n2 in
 	    													let oldNote = extractNoteWithoutDuration n2 in
 	    													[Note((setNoteDuration (intToNote ((noteToInt oldNote) - lit))) dur)]
 	    									| _ -> raise (Failure ("Illegal array value")))
 	    								| hd :: tl -> (match hd with
 	    									Array(a2) -> [Array((goThroughArray op (Literal(lit)) a2))] @ (goThroughArray op (Literal(lit)) tl)
-	    									| Rest(r) -> raise (Failure ("Cannot change the pitch of a rest"))
+	    									| Rest(r) -> [Rest(r)]
+	    									| Binop(e1, o, e2) -> let v, vars = eval env (Binop(e1, o, e2)) in goThroughArray op (Literal(lit)) [v] @ (goThroughArray op (Literal(lit)) tl)
+	    									| Index(a,i) -> let v, vars = eval env (Index(a,i)) in (goThroughArray op (Literal(lit)) [v]) @ (goThroughArray op (Literal(lit)) tl)
 	    									| Note(n2) -> 	let dur = noteToDuration n2 in
 	    													let oldNote = extractNoteWithoutDuration n2 in
 	    													[Note((setNoteDuration (intToNote ((noteToInt oldNote) - lit))) dur)] 
@@ -184,12 +188,16 @@ let run (vars, funcs) =
 	    									| Note(n2) -> let newDuration = (noteToDuration n2) * lit in 
 	    													let newNote = setNoteDuration n2 newDuration in
 	    													[Note(newNote)]
+	    									| Binop(e1, o, e2) -> let v, vars = eval env (Binop(e1, o, e2)) in goThroughArray op (Literal(lit)) [v]
+	    									| Index(a,i) -> let v, vars = eval env (Index(a,i)) in goThroughArray op (Literal(lit)) [v]
 	    									| Rest(r) -> let newDuration = (noteToDuration r) * lit in 
 	    													let newRest = setNoteDuration r newDuration in
 	    													[Rest(newRest)]
 	    									| _ -> raise (Failure ("Illegal array value")))
 	    								| hd :: tl -> (match hd with
 	    									Array(a2) -> [Array((goThroughArray op (Literal(lit)) a2))] @ (goThroughArray op (Literal(lit)) tl)
+	    									| Binop(e1, o, e2) -> let v, vars = eval env (Binop(e1, o, e2)) in goThroughArray op (Literal(lit)) [v] @ (goThroughArray op (Literal(lit)) tl)
+	    									| Index(a,i) -> let v, vars = eval env (Index(a,i)) in (goThroughArray op (Literal(lit)) [v]) @ (goThroughArray op (Literal(lit)) tl)
 	    									| Note(n2) -> let newDuration = (noteToDuration n2) * lit in 
 	    													let newNote = setNoteDuration n2 newDuration in
 	    													[Note(newNote)] @ (goThroughArray op (Literal(lit)) tl)
@@ -206,12 +214,16 @@ let run (vars, funcs) =
 	    									| Note(n2) -> let newDuration = (noteToDuration n2) / lit in 
 	    													let newNote = setNoteDuration n2 newDuration in
 	    													[Note(newNote)]
+	    									| Binop(e1, o, e2) -> let v, vars = eval env (Binop(e1, o, e2)) in goThroughArray op (Literal(lit)) [v]
+	    									| Index(a,i) -> let v, vars = eval env (Index(a,i)) in goThroughArray op (Literal(lit)) [v]
 	    									| Rest(r) -> let newDuration = (noteToDuration r) / lit in 
 	    													let newRest = setNoteDuration r newDuration in
 	    													[Rest(newRest)]
 	    									| _ -> raise (Failure ("Illegal array value")))
 	    								| hd :: tl -> (match hd with
 	    									Array(a2) -> [Array((goThroughArray op (Literal(lit)) a2))] @ (goThroughArray op (Literal(lit)) tl)
+	    									| Binop(e1, o, e2) -> let v, vars = eval env (Binop(e1, o, e2)) in goThroughArray op (Literal(lit)) [v] @ (goThroughArray op (Literal(lit)) tl)
+	    									| Index(a,i) -> let v, vars = eval env (Index(a,i)) in (goThroughArray op (Literal(lit)) [v]) @ (goThroughArray op (Literal(lit)) tl)
 	    									| Note(n2) -> let newDuration = (noteToDuration n2) / lit in 
 	    													let newNote = setNoteDuration n2 newDuration in
 	    													[Note(newNote)] @ (goThroughArray op (Literal(lit)) tl)
