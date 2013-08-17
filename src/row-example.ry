@@ -1,0 +1,27 @@
+getBaseNotes() {
+	def row;
+	def rowbase;
+
+
+	rowbase = [[C5,E5,G5], [C5,E5,G5], [C5,E5,G5], D5.8, E5.8, 
+          E5.8, D5.8, E5.8, F5.8, G5.2, 
+          C6, G5, E5, C5, 
+          G5.8, F5.8, E5.8, D5.8, [C5,E5,G5]];
+
+    row = rowbase :: rowbase :: rowbase;
+
+    return row;
+}
+
+
+track_1() {
+	return getBaseNotes();
+}
+
+track_2() {
+	return [R.1,R.1,R.1,R.1] :: getBaseNotes() << 2;
+}
+
+track_3() {
+	return [R.1,R.1] :: getBaseNotes() << 1;
+}
