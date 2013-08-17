@@ -1,5 +1,13 @@
-init() {
+/*	Array Test
 	
+	The following three tests
+	test the following:
+	1. Simple single element array
+	2. Multi-element array
+	3. Nested array
+*/
+
+init() {
 	print([1]);
 	print([1,2,3]);
 	print([1,2,[1,2,3]]);

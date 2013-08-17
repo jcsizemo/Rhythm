@@ -1,3 +1,12 @@
+/*	Note Test
+
+	Tests the following:
+	1. Basic note
+	2. Sharp symbol
+	3. Flat symbol
+	4. Sharp/flat symbol and duration
+*/
+
 init() {
 	
 	print(G4);

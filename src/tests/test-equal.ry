@@ -1,10 +1,30 @@
-init() {
+/*	Equality Test
 
-	print(A4 == A4);
+	Tests the following:
+
+	1. Note equal to itself (A4.4 and A4 should be same)
+	2. Literal equal to itself
+	3. Rest equal to itself
+	4. Different notes
+	5. Different durations
+	6. Different literals
+	7. Literal to note
+	8. Chord to itself
+	9. Chord to literal
+	10. Same sequences
+	11. Different sequences
+*/
+
+init() {
+	print(A4.4 == A4);
 	print(1 == 1);
+	print(R == R);
 	print(A4 == B4);
+	print(A4.4 == A4.8);
 	print(1 == 2);
+	print(1 == A4);
 	print([A4,B4] == [A4,B4]);
+	print([A4,B4] == 1);
 	print([A4,B4,[C4,D4,E4]] == [A4,B4,[C4,D4,E4]]);
 	print([A4,B4,[C4,D4,E4]] == [A4,B4,[C4,D4,F4]]);
 

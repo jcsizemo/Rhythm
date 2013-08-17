@@ -1,3 +1,11 @@
+/*	Concatentation Test
+
+	Tests the following:
+	1. True condition
+	2. False condition
+	3. Nested if statements
+*/
+
 init() {
 
 	if (A4 == A4) {

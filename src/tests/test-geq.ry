@@ -1,3 +1,11 @@
+/*	Greater Than Or Equal Test
+
+	Tests the following:
+	1. RHS one pitch lower
+	2. Notes equal
+	3. RHS one pitch higher 
+*/
+
 init() {
 
 	print(B4 >= A#4);

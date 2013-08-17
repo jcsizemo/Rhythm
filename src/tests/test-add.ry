@@ -1,12 +1,29 @@
+/* Addition Test
+
+	The following tests test
+	the following:
+	1. Simple addition
+	2. Note pitch change
+	3. Chord pitch change
+	4. Sequence pitch change with a chord
+	5. Note mixing (this makes a chord)
+	6. Note mixing (with left associativity,
+		this first makes a chord with A and B
+		and then makes two chords with A and C
+		and B and C)
+	7. Chord mixing (the LHS becomes three chords
+		that each include D)
+	8. Chord mixing (Elements sharing an index
+					will combine to make new chords)
+*/
+
 init() {
 	print(1+1);
-	print(1+2+3);
 	print(A4 + 1);
-	print(A4 + 1 + 2);
 	print([A4,B4] + 1);
-	print([A4,B4] + 1 + 2);
 	print([A4,B4,[C4,D4]] + 1);
 	print(A4 + B4);
 	print(A4 + B4 + C4);
 	print([A4,B4,C4] + D4);
+	print([A4,B4,C4] + [D4,E4]);
 }

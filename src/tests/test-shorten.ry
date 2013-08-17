@@ -1,10 +1,17 @@
+/*	Shorten Test
+
+	Tests the following:
+	1. Quarter to eighth notes
+	2. Whole to sixteenth
+	3. Chord shortening
+	4. Sequence shortening
+*/
+
 init() {
 	
 	print(A4 / 2);
 	print(A4.1 / 16);
-	print(A4.1 / 2);
-	print(A4.8 / 2);
 	print([A4,B4,C4] / 2);
-	print([Ab4.8,B4.8,C#4.8] / 2);
+	print([Ab4.8,B4.8,[C#4.8,D8]] / 2);
 
 }

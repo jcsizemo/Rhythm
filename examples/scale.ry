@@ -1,0 +1,28 @@
+/* major scales are whole, whole, half, whole, whole, whole, half */
+/* minor scale: whole half whole whole half whole whole */
+
+cMajor() {
+	song = [];
+	c = C4;
+	steps = [2,2,1,2,2,2,1,1];
+	count = 0;
+	while(count < 8) {
+		song ::= c;
+		c += steps[count];
+		count++;
+	}
+	return song;
+}
+
+track_cMajor_and_eMinor() {
+	song = cMajor() :: R.1->2;
+	c = E4;
+	steps = [2,1,2,2,1,2,2,2];
+	count = 0;
+	while(count < 8) {
+		song ::= c;
+		c += steps[count];
+		count++;
+	}
+	return song;
+}

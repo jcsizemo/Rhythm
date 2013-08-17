@@ -1,6 +1,15 @@
+/*	Concatentation Test
+
+	Tests the following:
+	1. Two notes into a sequence
+	2. Note to end of a sequence
+	3. Chord to end of sequence
+*/
+
 init() {
 
 	print(A4 :: A4);
-	
+	print([A4,B4] :: C4);
+	print([A4,B4] :: [[C4,D4]]);
 
 }

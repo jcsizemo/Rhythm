@@ -1,0 +1,19 @@
+/*	Arpeggio Test
+
+	Tests the following:
+	1. Algorithms in Rhythm
+	2. Loop loop to build track
+	3. If the songs are building with the correct notes
+*/
+
+init() {
+	c = C4;
+	song = [];
+	loop (0 : 4) {
+		song ::= c;
+		c += 4;
+	}
+	song[2]--;
+	song ::= song[2] :: song[1] :: song[0];
+	print(song);
+}

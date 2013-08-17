@@ -1,3 +1,9 @@
+/*	Octave Down Test
+
+	Tests the following:
+	1. Note shifted down two octaves
+*/
+
 init() {
 	
 	print(C4 << 2);

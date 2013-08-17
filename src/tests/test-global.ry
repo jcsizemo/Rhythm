@@ -1,3 +1,11 @@
+/*	Global Test
+
+	Tests the following:
+	1. Checks to see if the assignment to
+	the global within the function works
+	or goes out of scope
+*/
+
 def c;
 
 init() {

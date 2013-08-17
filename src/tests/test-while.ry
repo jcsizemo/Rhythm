@@ -1,3 +1,10 @@
+/*	Greater Than Test
+
+	Tests the following:
+	1. While loop functionality
+	2. Obeys logic
+*/
+
 init() {
 	
 	a = 0;

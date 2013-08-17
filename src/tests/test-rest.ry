@@ -1,3 +1,10 @@
+/*	Rest Test
+
+	Tests the following:
+	1. Rest without defined duration
+	2. Rest with defined duration
+*/
+
 init() {
 	
 	print(R);

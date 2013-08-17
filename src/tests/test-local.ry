@@ -1,3 +1,12 @@
+/*	Local Var Test
+
+	Tests the following:
+	1. Print local variable
+	2. Print global variable: 
+		Check to see local version
+		is not assigned to global version
+*/
+
 def c;
 
 foo(c) {

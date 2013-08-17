@@ -1,3 +1,11 @@
+/*	Stretch Test
+
+	Tests the following:
+	1. Note to 4 notes
+	2. Two note sequence repeated 4 times
+	3. 3 repeated chords
+*/
+
 init() {
 	
 	print(A4 -> 3);

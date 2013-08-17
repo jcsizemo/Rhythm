@@ -1,11 +1,19 @@
+/*	Minus Test
+
+	Tests the following:
+	1. Unary negation
+	2. Positive minus positive
+	3. Positive minus negative
+	5. Pitch decrease
+	6. Chord pitch decrease
+	7. Pitch decrease across sequence
+*/
+
 init() {
 	print(-1 - 1);
-	print(1 - 2 - 3);
 	print(43 - 7);
 	print(43 - -7);
 	print(A4 - 1);
-	print(A4 - 1 - 2);
 	print([C4,F4] - 1);
-	print([A4,B4] - 1 - 2);
 	print([A4.1,B4.2,[C4.4,D4.8]] - 1);
 }

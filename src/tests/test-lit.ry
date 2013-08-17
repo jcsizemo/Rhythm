@@ -1,3 +1,11 @@
+/*	Concatentation Test
+
+	Tests the following:
+	1. Positive integers
+	2. Negative integers
+	3. Zero
+*/
+
 init() {
 	
 	print(1);

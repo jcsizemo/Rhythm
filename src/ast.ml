@@ -9,7 +9,7 @@ type expr =
   | Binop of expr * op * expr
   | Assign of expr * expr
   | Call of string * expr list
-  | Index of string * int list
+  | Index of string * expr list
 
 type stmt =
     Block of stmt list

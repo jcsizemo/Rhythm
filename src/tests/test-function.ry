@@ -1,3 +1,10 @@
+/*	Function Test
+
+	Tests the following:
+	1. Functionality of functions
+	2. Argument passing
+	3. Result returning
+*/
 
 getNotes() {
 	return [A4,B4,C4];

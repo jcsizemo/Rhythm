@@ -1,3 +1,11 @@
+/*	Expression Test
+
+	Tests the following:
+	1. Operator associativity and precedence
+	2. All operator functionality with a statement
+	3. Assignments
+*/
+
 init() {
 	print(1 + 2 - 3);
 	a = [A4,B4,C4];

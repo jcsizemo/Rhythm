@@ -1,3 +1,11 @@
+/*	Concatentation Test
+
+	Tests the following:
+	1. Tests loop to build a song
+		with all halfsteps up
+		to a new octave
+*/
+
 init() {
 
 	allNotes = [];

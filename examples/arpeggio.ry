@@ -1,0 +1,11 @@
+track_cArp() {
+	c = C4;
+	song = [];
+	loop (0 : 4) {
+		song ::= c;
+		c += 4;
+	}
+	song[2]--;
+	song ::= song[2] :: song[1] :: song[0];
+	return song;
+}

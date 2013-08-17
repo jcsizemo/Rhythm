@@ -123,5 +123,5 @@ index_opt:
   indices { List.rev $1 }
 
 indices:
-  LBRACKET LITERAL RBRACKET { [$2] }
-  | indices LBRACKET LITERAL RBRACKET {$3 :: $1}
+  LBRACKET expr RBRACKET { [$2] }
+  | indices LBRACKET expr RBRACKET {$3 :: $1}

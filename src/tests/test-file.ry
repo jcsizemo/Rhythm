@@ -1,3 +1,10 @@
+/* 	File Test
+
+	The following tests test the following:
+
+	1. File prints OK
+*/
+
 def s;
 
 

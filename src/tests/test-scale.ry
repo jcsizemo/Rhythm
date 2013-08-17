@@ -1,0 +1,35 @@
+/*	Scale Test
+
+	Tests the following:
+	1. Algorithms in Rhythm
+	2. While loop to index array
+	3. Track building
+	4. If the songs are building with the correct notes
+*/
+
+/* major scales are whole, whole, half, whole, whole, whole, half */
+/* minor scale: whole half whole whole half whole whole */
+
+init() {
+	song = [];
+	c = C4;
+	steps = [2,2,1,2,2,2,1,1];
+	count = 0;
+	while(count < 8) {
+		song ::= c;
+		c += steps[count];
+		count++;
+	}
+	print(song);
+
+	song = [];
+	c = E4;
+	steps = [2,1,2,2,1,2,2,2];
+	count = 0;
+	while(count < 8) {
+		song ::= c;
+		c += steps[count];
+		count++;
+	}
+	print(song);
+}

@@ -1,3 +1,9 @@
+/*	Octave Up Test
+
+	Tests the following:
+	1. Shift two octaves up (C6)
+*/
+
 init() {
 	
 	print(C4 >> 2);

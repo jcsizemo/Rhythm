@@ -107,8 +107,15 @@ let run (vars, funcs) =
 	  		in
 	  		match indices with
 	  		[] -> raise (Failure ("Cannot index empty list"))
-	  		| hd :: [] -> List.nth arr hd, env
-	  		| hd :: tl -> lookup (List.nth arr hd) tl
+	  		| Literal(hd) :: [] -> List.nth arr hd, env
+	  		| Literal(hd) :: tl -> lookup (List.nth arr hd) tl
+	  		| Id(hd) :: [] -> let hd,v = eval env (Id(hd)) in (match hd with
+	  															Literal(hd) -> List.nth arr hd, env
+	  															| _ -> raise (Failure "Illegal index"))
+	  		| Id(hd) :: tl -> let hd,v = eval env (Id(hd)) in (match hd with
+	  															Literal(hd) -> lookup (List.nth arr hd) tl
+	  															| _ -> raise (Failure "Illegal index"))
+	  		| _ -> raise (Failure "Illegal index")
 	  	in
 	  	lookup v i
       | Binop(e1, op, e2) ->
@@ -283,17 +290,21 @@ let run (vars, funcs) =
 	       	|Equal -> 
 	     		(match (v1,v2) with
 	     		    (Literal(l1), Literal(l2)) -> Literal(boolean (v1 = v2)), env
-	     		    | (Note(n1), Note(n2)) -> Literal(boolean (n1 = n2)), env
-	     		    | (Rest(r1), Note(r2)) -> Literal(boolean (r1 = r2)), env
+	     		    | (Note(n1), Note(n2)) -> let isSame = ((extractNoteWithoutDuration n1) = (extractNoteWithoutDuration n2))
+	     		    											&& ((noteToDuration n1) = (noteToDuration n2))
+	     		    							in Literal((boolean isSame)), env
+	     		    | (Rest(r1), Rest(r2)) -> Literal(boolean (r1 = r2)), env
 	     		    | (Array(a1), Array(a2)) -> Literal(boolean (a1 = a2)), env
-	     			| _ -> raise (Failure ("Invalid IsEqual Operation")))	
+	     			| _ -> Literal(0), env)
 	     	|Neq ->
 	     		(match (v1,v2) with
 	     			(Literal(l1), Literal(l2)) -> Literal(boolean (v1 <> v2)), env
-	     			| (Note(n1), Note(n2)) -> Literal(boolean (n1 <> n2)), env
-	     			| (Rest(r1), Note(r2)) -> Literal(boolean (r1 <> r2)), env
+	     			| (Note(n1), Note(n2)) -> let isSame = ((extractNoteWithoutDuration n1) <> (extractNoteWithoutDuration n2))
+	     		    											|| ((noteToDuration n1) <> (noteToDuration n2))
+	     		    							in Literal((boolean isSame)), env
+	     			| (Rest(r1), Rest(r2)) -> Literal(boolean (r1 <> r2)), env
 	     			| (Array(a1), Array(a2)) -> Literal(boolean (a1 <> a2)), env
-	     			| _ -> raise (Failure ("Invalid NotEqual Operation")))	
+	     			| _ -> Literal(1), env)	
 	     	|Less -> 
 	     		(match (v1,v2) with
 	     			(Literal(l1), Literal(l2)) -> Literal(boolean (v1 < v2)), env
@@ -403,18 +414,19 @@ let run (vars, funcs) =
 	  	else
 	  		v, (NameMap.add name v locals, globals)
 	  	| Index(arrName,indices) -> 
+	  					let rec getIndexFromVar = function
+	  						Literal(l) -> l
+	  						| Id(i) -> let e, v = eval env (Id(i)) in getIndexFromVar e
+	  						| _ -> raise (Failure ("Illegal index"))
+	  					in
 	  					let rec swap exps = function
 	  						[] -> raise (Failure ("Cannot perform operation on an empty array"))
-	  						| hd :: [] -> let arr = (Array.of_list exps)
-	  							in
-	  							arr.(hd) <- v; Array.to_list arr
-	  						| hd :: tl -> 	let arr = (Array.of_list exps)
-	  							in
-	  							let piece = match arr.(hd) with
-	  									Array(x) -> x
-	  									| _ -> raise (Failure ("Bad index")) 
-	  							in
-	  							arr.(hd) <- Array(swap piece tl); Array.to_list arr
+	  						| hd :: [] -> let hd = getIndexFromVar hd in let arr = (Array.of_list exps) in arr.(hd) <- v; Array.to_list arr
+	  						| hd :: tl -> 	let hd = getIndexFromVar hd in let arr = (Array.of_list exps) in
+	  											let piece = match arr.(hd) with
+	  												Array(x) -> x
+	  												| _ -> raise (Failure ("Bad index")) 
+	  											in arr.(hd) <- Array(swap piece tl); Array.to_list arr
 	  						in
 	  					if (NameMap.mem arrName locals) then
 	  						let eList = (match (NameMap.find arrName locals) with
