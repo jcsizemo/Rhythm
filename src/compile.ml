@@ -515,7 +515,7 @@ let run (vars, funcs) =
     (* Execute each statement in sequence, return updated global symbol table *)
     snd (List.fold_left exec (locals, globals) fdecl.body)
 
-  (* Run a program: initialize global variables to 0, find and run "main" *)
+  (* Run a program: initialize global variables to 0, find and run init and then tracks *)
   in let globals = List.fold_left
       (fun globals vdecl -> NameMap.add vdecl (Literal(0)) globals) NameMap.empty vars
   in 
